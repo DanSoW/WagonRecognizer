@@ -1,0 +1,8 @@
+1615102900242	Encapsulate field 'jdbcDriver'
+1615102905407	Encapsulate field 'jdbcUrl'
+1615102909826	Encapsulate field 'jdbcPassword'
+1615102918014	Encapsulate field 'jdbcUser'
+1615102944071	Encapsulate field 'jdbcMaxPoolSize'
+1615103274786	Delete element
+1615103737082	Encapsulate field 'age'
+1615133572257	Delete element

@@ -1,0 +1,8 @@
+package com.server.wagons;
+
+import com.server.program.DataElementWagons;
+
+public interface DataElementServiceWagons {
+	DataElementWagons getDataElementWagons(int numberWagon);
+	void insertDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
+}

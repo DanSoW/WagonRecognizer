@@ -15,7 +15,6 @@
     <fullyQualifiedTypeName name="org.springframework.context.annotation.Primary"/>
     <fullyQualifiedTypeName name="org.springframework.stereotype.Service"/>
     <fullyQualifiedTypeName name="org.springframework.beans.factory.annotation.Autowired"/>
-    <fullyQualifiedTypeName name="org.springframework.stereotype.Repository"/>
     <fullyQualifiedTypeName name="com.server.program.DataElement"/>
     <fullyQualifiedTypeName name="org.springframework.http.HttpStatus"/>
     <fullyQualifiedTypeName name="org.springframework.web.bind.annotation.PostMapping"/>
@@ -38,4 +37,11 @@
     <fullyQualifiedTypeName name="java.io.File"/>
     <fullyQualifiedTypeName name="java.io.FileOutputStream"/>
     <fullyQualifiedTypeName name="com.server.program.ConnectionSettings"/>
+    <fullyQualifiedTypeName name="com.server.program.DataElementDaoImplWagons"/>
+    <fullyQualifiedTypeName name="com.server.program.DataElementDaoWagons"/>
+    <fullyQualifiedTypeName name="com.server.services.DataElementServiceWagons"/>
+    <fullyQualifiedTypeName name="com.server.program.DataElementWagons"/>
+    <fullyQualifiedTypeName name="com.server.program.DataElementRequestWagons"/>
+    <fullyQualifiedTypeName name="org.springframework.stereotype.Repository"/>
+    <fullyQualifiedTypeName name="org.springframework.jdbc.core.PreparedStatementCallback"/>
 </qualifiedTypeNameHistroy>

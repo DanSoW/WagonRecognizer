@@ -1,0 +1,23 @@
+package com.server.program;
+
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Component;
+
+@Component
+public class DataElementMapperWagons implements RowMapper<DataElementWagons> {
+	@Override
+	public DataElement mapRow(ResultSet rs, int rowNum) throws SQLException{
+		DataElement element = new DataElement();
+		element.setInvoicesId(rs.getInt("invoices_ID"));
+		element.setCargo(rs.getString("cargo"));
+		element.setNumberWagon(rs.getString("numberWagon"));
+		element.setPathImage(rs.getString("pathImage"));
+		element.setNumberOrder(rs.getInt("numberOrder"));
+		element.setDateArrival(rs.getString("dateArrival"));
+        return element;
+	}
+}

@@ -1,0 +1,10 @@
+package com.server.database;
+
+public interface DataElementService {
+	DataElementWagons getDataElementWagons(int numberWagon);
+	void insertDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
+	
+	DataElementInvoices getDataElementInvoices(String numberInvoices);
+	void insertDataElementInvoices(String numberInvoice, String nameSupplier, 
+			short totalWagons, String arrivalTrainDate, String departureTrainDate);
+}

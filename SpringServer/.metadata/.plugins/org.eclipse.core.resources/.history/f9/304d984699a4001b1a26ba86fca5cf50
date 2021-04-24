@@ -1,0 +1,27 @@
+package com.server.database;
+
+import com.sun.istack.NotNull;
+
+public class DataElementRequestDeleteRegister {
+	@NotNull
+	private String fkNumberInvoice;
+	
+	@NotNull
+	private Integer numberWagon;
+
+	public String getFkNumberInvoice() {
+		return fkNumberInvoice;
+	}
+
+	public void setFkNumberInvoice(String fkNumberInvoice) {
+		this.fkNumberInvoice = fkNumberInvoice;
+	}
+
+	public String getNumberWagon() {
+		return numberWagon;
+	}
+
+	public void setNumberWagon(String numberWagon) {
+		this.numberWagon = numberWagon;
+	}
+}

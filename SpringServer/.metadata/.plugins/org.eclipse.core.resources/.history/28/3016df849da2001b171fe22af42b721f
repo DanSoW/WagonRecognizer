@@ -1,0 +1,18 @@
+package com.server.database;
+
+import java.util.Optional;
+
+public interface DataElementDao {
+	//Returns an object from the database by the number of the wagon
+	Optional<DataElementWagons> getDataElementWagonsByNumber(int numberWagon);
+	
+	//Adding an item to the wagons table
+	void insertDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
+	
+	//Returns an object from the database by the number of the invoices
+	Optional<DataElementInvoices> getDataElementInvoicesByNumber(String numberInvoices);
+	
+	//Adding an item to the invoices table
+	void insertDataElementInvoices(String numberInvoice, String nameSupplier, short totalWagons, 
+			String arrivalTrainDate, String departureTrainDate);
+}

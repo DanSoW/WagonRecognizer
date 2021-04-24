@@ -1,0 +1,60 @@
+package com.server.database;
+
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+
+import java.util.Optional;
+
+@Primary
+@Service
+public class DataElementServiceImpl implements DataElementService {
+
+	private final DataElementDao dataDao;
+	
+	@Autowired
+	public DataElementServiceImpl(DataElementDao dDao) {
+		this.dataDao = dDao;
+	}
+	
+	
+	@Override
+	public List<DataElementWagons> getDataElementAllWagons() {
+		List<Optional<DataElementWagons>> wagons = this.dataDao.getDataElementAll();
+		List<DataElementWagons> data = null;
+		try {
+			data = List.of(wagons.get(0).orElseThrow(() -> new Exception("Error! Data element is null!")));
+			for(int i = 0; i < wagons.size(); i++) {
+				data.add(wagons.get(i).orElseThrow(() -> new Exception("Error! Data element is null!")));
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public DataElementWagons getDataElementWagons(int numberWagon) {
+		return dataDao.getDataElementWagonsByNumber(numberWagon)
+				.orElseThrow(() -> new WagonNotFoundException(numberWagon));
+	}
+
+	@Override
+	public void insertDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize) {
+		dataDao.insertDataElementWagons(numberWagon, arrivalDate, imagePath, levelCorrectRecognize);
+	}
+
+	@Override
+	public DataElementInvoices getDataElementInvoices(String numberInvoices) {
+		return dataDao.getDataElementInvoicesByNumber(numberInvoices)
+				.orElseThrow(() -> new InvoiceNotFoundException(numberInvoices));
+	}
+
+	@Override
+	public void insertDataElementInvoices(String numberInvoice, String nameSupplier, short totalWagons,
+			String arrivalTrainDate, String departureTrainDate) {
+		dataDao.insertDataElementInvoices(numberInvoice, nameSupplier, totalWagons, arrivalTrainDate, departureTrainDate);
+	}
+}

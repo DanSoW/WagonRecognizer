@@ -1,0 +1,26 @@
+package com.server.database;
+
+import com.sun.istack.NotNull;
+
+public class DataElementRequestInsertRegister {
+	@NotNull
+	private Integer id;
+	
+	@NotNull
+	private String fkNumberInvoice;
+	
+	@NotNull
+	private String numberWagon;
+	
+	@NotNull
+	private Boolean arrivalMark;
+	
+	@NotNull
+	private Short serialNumber;
+	
+	@NotNull
+	private Short actualSerialNumber;
+	
+	@NotNull
+	private Float sD;
+}

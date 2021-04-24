@@ -1,0 +1,5 @@
+package com.server.database;
+
+public class DataElementRequestDeleteInvoices {
+
+}

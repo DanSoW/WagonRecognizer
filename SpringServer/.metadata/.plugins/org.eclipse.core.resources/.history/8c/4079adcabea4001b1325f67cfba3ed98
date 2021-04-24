@@ -1,0 +1,58 @@
+package com.server.database;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.server.database.elements.DataElementRegister;
+
+public interface DataElementDao {
+	//****************************************
+	//Returns an object from the database by the number of the wagon
+	Optional<DataElementWagons> getDataElementWagonsByNumber(int numberWagon);
+	
+	//For execute select command of the table wagons
+	List<Optional<DataElementWagons>> getDataElementWagonsAll();
+	
+	//Adding an item to the wagons table
+	void insertDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
+	
+	//Updating the wagon record
+	void updateDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
+	
+	//Delete the wagon record
+	void deleteDataElementWagons(int numberWagon);
+	
+	//****************************************
+	//Returns an object from the database by the number of the invoices
+	Optional<DataElementInvoices> getDataElementInvoicesByNumber(String numberInvoices);
+	
+	//For execute select command of the table invoices
+	List<Optional<DataElementInvoices>> getDataElementInvoicesAll();
+	
+	//Adding an item to the invoices table
+	void insertDataElementInvoices(String numberInvoice, String nameSupplier, short totalWagons, 
+			String arrivalTrainDate, String departureTrainDate);
+	
+	//Updating the invoices record
+	void updateDataElementInvoices(String numberInvoice, String nameSupplier, short totalWagons, 
+			String arrivalTrainDate, String departureTrainDate);
+	
+	//Delete the invoices record
+	void deleteDataElementInvoices(String numberInvoice);
+	
+	//****************************************
+	//Returns an object from the database by the number of the register
+	Optional<DataElementRegister> getDataElementRegisterById(String fkNumberInvoice, int numberWagon);
+		
+	//For execute select command of the table register
+	List<Optional<DataElementRegister>> getDataElementRegisterAll();
+		
+	//Adding an item to the register table
+	void insertDataElementRegister(String fkNumberInvoice, int numberWagon, short serialNumber, float sD);
+		
+	//Updating the register record
+	void updateDataElementRegister(String fkNumberInvoice, int numberWagon, short serialNumber, float sD);
+		
+	//Delete the register record
+	void deleteDataElementRegister(String fkNumberInvoice, int numberWagon);
+}

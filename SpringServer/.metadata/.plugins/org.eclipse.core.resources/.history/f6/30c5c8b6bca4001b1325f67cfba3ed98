@@ -1,0 +1,16 @@
+package com.server.database;
+
+import com.sun.istack.NotNull;
+
+public class DataElementImageFilePath {
+	@NotNull
+	private String filePath;
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+}

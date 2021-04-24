@@ -3,26 +3,27 @@ package com.server.program;
 import javax.servlet.MultipartConfigElement;
 
 import org.springframework.boot.SpringApplication;
-//import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
-//import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-//@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+//***********************************************************
+//Starting the server part of the application
+//***********************************************************
+
 @Configuration
 @SpringBootApplication(scanBasePackages = "com.server")
 public class ServerApplication {
 
 	@Bean
 	public MultipartConfigElement multipartConfigElement() {
-		//установка конфигурации для загрузки картинки на сервер
+		//Setting the configuration for uploading the image to the server
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize(DataSize.ofMegabytes(256L));				//максимальный размер файла
-        factory.setMaxRequestSize(DataSize.ofMegabytes(256L));			//максимальный размер возвращаемого файла
-        return factory.createMultipartConfig();							//возвращает созданную конфигурацию
+		factory.setMaxFileSize(DataSize.ofMegabytes(256L));				//maximum file size
+        factory.setMaxRequestSize(DataSize.ofMegabytes(256L));			//maximum size of the returned file
+        return factory.createMultipartConfig();							//returns the created configuration
 	}
 	
 	public static void main(String[] args) {

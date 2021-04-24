@@ -9,7 +9,7 @@ public class WagonNotFoundException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return "Number wagon = " + id
-				+ " not found";
+		return "The wagon with number = " + id
+				+ " not found!";
 	}
 }

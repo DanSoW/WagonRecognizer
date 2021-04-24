@@ -3,6 +3,10 @@ package com.server.settings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+//************************************************************
+//Settings for connecting to the database
+//************************************************************
+
 @Component
 @ConfigurationProperties(prefix = "spring.datasource")
 public class ConnectionSettings {

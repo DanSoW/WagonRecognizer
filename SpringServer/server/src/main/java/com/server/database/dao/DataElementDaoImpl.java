@@ -58,7 +58,6 @@ public class DataElementDaoImpl implements DataElementDao {
 	//***************************************************
 	//Queries to the table in the format of SQL commands:
 	
-	
 	//SQL commands for the wagons table
 	private static final String SQL_GET_DATA_BY_NUMBER_WAGONS = 
 			"SELECT * FROM " + NAME_WAGONS_TABLE + " WHERE " + NAME_ATTRIBUT_NUMBER_WAGON + " = :" + NAME_ATTRIBUT_NUMBER_WAGON;

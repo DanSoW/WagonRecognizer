@@ -1,0 +1,91 @@
+package com.server.controllers;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.server.database.elements.DataElementImageFilePath;
+
+//********************************************************************
+//Controller for implementing the ability to download a file from 
+//the server by the client application or upload a file from the client application to the server
+//********************************************************************
+
+@RestController
+public class FileLoadController {
+	
+	//The name of the directory where the uploaded photo from the client part of the application will be saved
+	private static final String nameDirectory = "Images"; 
+
+	
+	//Loading an image from the client side of the app
+	@RequestMapping(value="/upload", method=RequestMethod.POST)
+	public @ResponseBody String handleFileUpload(
+			@RequestParam("name") String name,
+			@RequestParam("file") MultipartFile file
+			) throws Exception {
+		File f = new File(nameDirectory);
+		if(!f.exists()) {
+			f.mkdir();
+		}
+		
+		if(!file.isEmpty()) {
+			try {
+				byte[] bytes = file.getBytes();
+				File fileData = new File(nameDirectory + "\\" + name);
+				BufferedOutputStream stream = 
+						new BufferedOutputStream(new FileOutputStream(fileData));
+				stream.write(bytes);
+                stream.close();
+                return fileData.getAbsolutePath();
+			}catch(Exception e) {
+				throw new Exception("Error! Failed to upload file!");
+			}
+		}
+		
+		throw new Exception("Error! No input data!");
+	}
+	
+	//Uploading an image from the server side to the client side
+	@RequestMapping(value = "/load/{file_name:.+}", method = RequestMethod.GET)
+    public void getFile(@PathVariable("file_name") String fileName, HttpServletResponse response) throws Exception {
+		File file = new File(nameDirectory + "\\" + fileName);
+        if (file.exists()){
+            response.setHeader("Content-disposition", "attachment;filename=" + fileName);
+            response.setContentType("multipart/form-data");
+ 
+            try {
+                Files.copy(file.toPath(), response.getOutputStream());
+                response.getOutputStream().flush();
+            } catch (IOException e) {
+                throw new Exception("Error! Unable to upload file!");
+            }
+        }
+        
+        throw new Exception("Error! This file is not on the server!");
+    }
+	
+	//Returns the absolute path to a file stored on the server (already uploaded)
+	@RequestMapping(value = "/load/filepath/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public DataElementImageFilePath getAbsoluteFilePath(@RequestParam String fileName) throws Exception {
+		File file = new File(nameDirectory + "\\" + fileName);
+        if (file.exists()){
+            return new DataElementImageFilePath(file.getAbsolutePath());
+        }
+        
+        throw new Exception("Error! This file is not on the server!");
+    }
+}

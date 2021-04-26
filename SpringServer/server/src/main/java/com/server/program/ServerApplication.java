@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 
 //***********************************************************
-//Starting the server part of the application
+//Запуск серверной части приложения
 //***********************************************************
 
 @Configuration
@@ -19,11 +19,11 @@ public class ServerApplication {
 
 	@Bean
 	public MultipartConfigElement multipartConfigElement() {
-		//Setting the configuration for uploading the image to the server
+		//Настройка конфигурации для загрузки изображения на сервер
 		MultipartConfigFactory factory = new MultipartConfigFactory();
-		factory.setMaxFileSize(DataSize.ofMegabytes(256L));				//maximum file size
-        factory.setMaxRequestSize(DataSize.ofMegabytes(256L));			//maximum size of the returned file
-        return factory.createMultipartConfig();							//returns the created configuration
+		factory.setMaxFileSize(DataSize.ofMegabytes(256L));				//максимальный размер файла
+        factory.setMaxRequestSize(DataSize.ofMegabytes(256L));			//максимальный размер возвращаемого файла
+        return factory.createMultipartConfig();							//возврат созданной конфигурации
 	}
 	
 	public static void main(String[] args) {

@@ -1,12 +1,16 @@
 package com.server.database.elements;
 
+//***************************************
+//Единица данных для таблицы Register
+//***************************************
+
 public class DataElementRegister {
-	private String fkNumberInvoice;
-	private int numberWagon;
-	private boolean arrivalMark;
-	private short serialNumber;
-	private short actualSerialNumber;
-	private float sD;
+	private String fkNumberInvoice;			//Идентификационный номер накладной
+	private int numberWagon;				//Идентификационный номер полувагона
+	private boolean arrivalMark;			//Метка о прибытии
+	private short serialNumber;				//Порядковый номер полувагона в составе по накладной
+	private short actualSerialNumber;		//Вычисленный порядковый номер полувагона в составе (по прибытию)
+	private float sD;						//Значение Sd%
 	
 	public DataElementRegister(String fkNumberInvoice, int numberWagon,
 			boolean arrivalMark, short serialNumber, short actualSerialNumber, float sD){

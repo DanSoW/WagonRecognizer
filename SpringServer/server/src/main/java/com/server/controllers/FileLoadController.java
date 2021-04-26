@@ -20,18 +20,17 @@ import org.springframework.web.multipart.MultipartFile;
 import com.server.database.elements.DataElementImageFilePath;
 
 //********************************************************************
-//Controller for implementing the ability to download a file from 
-//the server by the client application or upload a file from the client application to the server
+//Контроллер для загрузки изображений с сервера на клиент и с клиента на сервер
 //********************************************************************
 
 @RestController
 public class FileLoadController {
 	
-	//The name of the directory where the uploaded photo from the client part of the application will be saved
+	//Название директории, хранящейся на сервере, где будут сохранены изображения загруженные с клиентской части приложения
 	private static final String nameDirectory = "Images"; 
 
 	
-	//Loading an image from the client side of the app
+	//Загрузка изображений с клиентской части приложения на сервер
 	@RequestMapping(value="/upload", method=RequestMethod.POST)
 	public @ResponseBody String handleFileUpload(
 			@RequestParam("name") String name,
@@ -52,14 +51,14 @@ public class FileLoadController {
                 stream.close();
                 return fileData.getAbsolutePath();
 			}catch(Exception e) {
-				throw new Exception("Error! Failed to upload file!");
+				throw new Exception("Ошибка! Не удалось загрузить файл!");
 			}
 		}
 		
-		throw new Exception("Error! No input data!");
+		throw new Exception("Ошибка! Нет входных данных!");
 	}
 	
-	//Uploading an image from the server side to the client side
+	//Загрузка изображения с сервера на клиентскую часть приложения
 	@RequestMapping(value = "/load/{file_name:.+}", method = RequestMethod.GET)
     public void getFile(@PathVariable("file_name") String fileName, HttpServletResponse response) throws Exception {
 		File file = new File(nameDirectory + "\\" + fileName);
@@ -71,14 +70,14 @@ public class FileLoadController {
                 Files.copy(file.toPath(), response.getOutputStream());
                 response.getOutputStream().flush();
             } catch (IOException e) {
-                throw new Exception("Error! Unable to upload file!");
+                throw new Exception("Ошибка! Не удалось загрузить файл!");
             }
         }
         
-        throw new Exception("Error! This file is not on the server!");
+        throw new Exception("Ошибка! Файла с данным именем нет на сервере!");
     }
 	
-	//Returns the absolute path to a file stored on the server (already uploaded)
+	//Возвращает абсолютный путь к файлу, сохраненному на сервере или ошибку, в случае не существования файла на сервере
 	@RequestMapping(value = "/load/filepath/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public DataElementImageFilePath getAbsoluteFilePath(@RequestParam String fileName) throws Exception {
 		File file = new File(nameDirectory + "\\" + fileName);
@@ -86,6 +85,6 @@ public class FileLoadController {
             return new DataElementImageFilePath(file.getAbsolutePath());
         }
         
-        throw new Exception("Error! This file is not on the server!");
+        throw new Exception("Ошибка! Файла с данным именем нет на сервере!");
     }
 }

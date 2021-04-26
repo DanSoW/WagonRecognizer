@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 //************************************************************
-//Settings for connecting to the database
+//Настройки подключения к базе данных
 //************************************************************
 
 @Component
@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 public class ConnectionSettings {
 	private static int DEFAULT_MAX_POOL_SIZE = 5;
 	
-	private String jdbcDriver;
-	private String jdbcUrl;
-	private String jdbcUser;
-	private String jdbcPassword;
-	private int jdbcMaxPoolSize = DEFAULT_MAX_POOL_SIZE;
+	private String jdbcDriver;								//название jdbc драйвера для подключения
+	private String jdbcUrl;									//адрес, для подключения к базе данных
+	private String jdbcUser;								//название пользователя
+	private String jdbcPassword;							//пароль для подключения
+	private int jdbcMaxPoolSize = DEFAULT_MAX_POOL_SIZE;	//установка максимального пула (по-умолчанию 5)
 	
 	public String getJdbcDriver() {
 		return jdbcDriver;

@@ -24,29 +24,29 @@ import com.server.database.mappers.DataElementMapperWagons;
 @Repository
 public class DataElementDaoImpl implements DataElementDao {
 	
-	//Database name
+	//Имя базы данных
 	@SuppressWarnings("unused")
 	private static final String NAME_DATABASE = "WagonRecognize";
 
-	//Table names
+	//Имена таблиц
 	private static final String NAME_WAGONS_TABLE = "Wagons";
 	private static final String NAME_INVOICES_TABLE = "Invoices";
 	private static final String NAME_REGISTER_TABLE = "Register";
 	
-	//Attributes of the wagons table
+	//Атрибуты таблицы Wagons
 	public static final String NAME_ATTRIBUT_NUMBER_WAGON = "numberWagon";
 	public static final String NAME_ATTRIBUT_ARRIVAL_DATE = "arrivalDate";
 	public static final String NAME_ATTRIBUT_IMAGE_PATH = "imagePath";
 	public static final String NAME_ATTRIBUT_LEVEL_CORRECT = "levelCorrectRecognize";
 	
-	//Attributes of the invoices table
+	//Атрибуты таблицы Invoices
 	public static final String NAME_ATTRIBUT_NUMBER_INVOICES = "numberInvoices";
 	public static final String NAME_ATTRIBUT_NAME_SUPPLIER = "nameSupplier";
 	public static final String NAME_ATTRIBUT_TOTAL_WAGONS = "totalWagons";
 	public static final String NAME_ATTRIBUT_ARRIVAL_TRAIN_DATE = "arrivalTrainDate";
 	public static final String NAME_ATTRIBUT_DEPARTURE_TRAIN_DATE = "departureTrainDate";
 	
-	//Attributes of the register table
+	//Атрибуты таблицы Register
 	public static final String NAME_ATTRIBUT_ID = "id";
 	public static final String NAME_ATTRIBUT_REF_NUMBER_INVOICE = "refNumberInvoice";
 	public static final String NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON = "thisNumberWagon";
@@ -56,9 +56,9 @@ public class DataElementDaoImpl implements DataElementDao {
 	public static final String NAME_ATTRIBUT_SD = "sD";
 	
 	//***************************************************
-	//Queries to the table in the format of SQL commands:
+	//Запросы к базе данных в формате SQL команд:
 	
-	//SQL commands for the wagons table
+	//SQL-запросы для таблицы Wagons
 	private static final String SQL_GET_DATA_BY_NUMBER_WAGONS = 
 			"SELECT * FROM " + NAME_WAGONS_TABLE + " WHERE " + NAME_ATTRIBUT_NUMBER_WAGON + " = :" + NAME_ATTRIBUT_NUMBER_WAGON;
 	private static final String SQL_INSERT_DATA_WAGONS =
@@ -98,7 +98,7 @@ public class DataElementDaoImpl implements DataElementDao {
 	private static final String SQL_DELETE_RECORD_WAGONS = "DELETE FROM " + NAME_WAGONS_TABLE + " WHERE "
 			+ NAME_ATTRIBUT_NUMBER_WAGON + "=:" + NAME_ATTRIBUT_NUMBER_WAGON + ";";
 	
-	//SQL commands for the invoices table
+	//SQL-запросы для таблицы Invoices
 	private static final String SQL_GET_DATA_BY_NUMBER_INVOICES = 
 			"SELECT * FROM " + NAME_INVOICES_TABLE + " WHERE " + NAME_ATTRIBUT_NUMBER_INVOICES + " = :" + NAME_ATTRIBUT_NUMBER_INVOICES;
 	private static final String SQL_INSERT_DATA_INVOICES =
@@ -135,7 +135,7 @@ public class DataElementDaoImpl implements DataElementDao {
 	private static final String SQL_DELETE_RECORD_INVOICES = "DELETE FROM " + NAME_INVOICES_TABLE + " WHERE "
 			+ NAME_ATTRIBUT_NUMBER_INVOICES + "=:" + NAME_ATTRIBUT_NUMBER_INVOICES + ";";
 	
-	//SQL commands for the register table
+	//SQL-запросы для таблицы Register
 	private static final String SQL_GET_DATA_BY_ID_REGISTER = 
 			"SELECT * FROM " + NAME_REGISTER_TABLE + " WHERE " + NAME_ATTRIBUT_REF_NUMBER_INVOICE + " = :" + NAME_ATTRIBUT_REF_NUMBER_INVOICE
 			+ " AND " + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + "=:" + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + ";";
@@ -204,7 +204,7 @@ public class DataElementDaoImpl implements DataElementDao {
 		this.dataMapperRegister = dMapperRegister;
 		this.jdbcTemplate = jTempl;
 		
-		//Create table wagons
+		//Создание таблицы Wagons
 		this.jdbcTemplate.execute(SQL_CREATE_TABLE_WAGONS, new PreparedStatementCallback<Object>() {
 			@Override
 			public Object doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -213,7 +213,7 @@ public class DataElementDaoImpl implements DataElementDao {
 			}
 		});
 		
-		//Create table invoices
+		//Создание таблицы Invoices
 		this.jdbcTemplate.execute(SQL_CREATE_TABLE_INVOICES, new PreparedStatementCallback<Object>() {
 			@Override
 			public Object doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -222,7 +222,7 @@ public class DataElementDaoImpl implements DataElementDao {
 			}
 		});
 		
-		//Create table register
+		//Создание таблицы Register
 		this.jdbcTemplate.execute(SQL_CREATE_TABLE_REGISTER, new PreparedStatementCallback<Object>() {
 			@Override
 			public Object doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
@@ -233,7 +233,7 @@ public class DataElementDaoImpl implements DataElementDao {
 	}
 	
 	//*************************************
-	//Logic of interaction with the wagons table
+	//Логика для взаимодействия с таблицей Wagons
 	@Override
 	public Optional<DataElementWagons> getDataElementWagonsByNumber(int numberWagon){
 		MapSqlParameterSource params = new MapSqlParameterSource();
@@ -269,7 +269,7 @@ public class DataElementDaoImpl implements DataElementDao {
 		
 		jdbcTemplate.update(SQL_INSERT_DATA_WAGONS, params);
 		
-		//Setting the arrival label
+		//Обновление значений о прибытии (с FALSE на TRUE)
 		MapSqlParameterSource params1 = new MapSqlParameterSource();
 		params1.addValue(NAME_ATTRIBUT_NUMBER_WAGON, numberWagon);
 		jdbcTemplate.update(SQL_SET_ARRIVAL_MARK_TRUE, params1);
@@ -292,14 +292,14 @@ public class DataElementDaoImpl implements DataElementDao {
 		params.addValue(NAME_ATTRIBUT_NUMBER_WAGON, numberWagon);
 		jdbcTemplate.update(SQL_DELETE_RECORD_WAGONS, params);
 		
-		//Setting the arrival label
+		//Обновление значений о прибытии (с TRUE на FALSE)
 		MapSqlParameterSource params1 = new MapSqlParameterSource();
 		params1.addValue(NAME_ATTRIBUT_NUMBER_WAGON, numberWagon);
 		jdbcTemplate.update(SQL_SET_ARRIVAL_MARK_FALSE, params1);
 	}
 	
 	//*************************************
-	//Logic of interaction with the invoices table
+	//Логика взаимодействия с таблицей Invoices
 	@Override
 	public Optional<DataElementInvoices> getDataElementInvoicesByNumber(String numberInvoices){
 		MapSqlParameterSource params = new MapSqlParameterSource();
@@ -357,7 +357,7 @@ public class DataElementDaoImpl implements DataElementDao {
 	}
 
 	//*************************************
-	//Logic of interaction with the register table
+	//Логика взаимодействия с таблицей Register
 	@Override
 	public Optional<DataElementRegister> getDataElementRegisterById(String fkNumberInvoice, int numberWagon) {
 		MapSqlParameterSource params = new MapSqlParameterSource();

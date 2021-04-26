@@ -9,55 +9,55 @@ import com.server.database.elements.DataElementWagons;
 
 public interface DataElementDao {
 	//****************************************
-	//Returns an object from the database by the number of the wagon
+	//Возвращение информации о конкретном полувагоне по его идентификационному номеру
 	Optional<DataElementWagons> getDataElementWagonsByNumber(int numberWagon);
 	
-	//For execute select command of the table wagons
+	//Возвращение информации о всех полувагонах, содержащихся в таблице Wagons
 	List<Optional<DataElementWagons>> getDataElementWagonsAll();
 	
-	//Adding an item to the wagons table
+	//Добавление информации о полувагоне в таблицу Wagons
 	void insertDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
 	
-	//Updating the wagon record
+	//Обновление одной конкретной записи о полувагоне в таблице Wagons
 	void updateDataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize);
 	
-	//Delete the wagon record
+	//Удаление одной конкретной записи о полувагоне, по его идентификационному номеру
 	void deleteDataElementWagons(int numberWagon);
 	
 	//****************************************
-	//Returns an object from the database by the number of the invoices
+	//Возвращение информации о конкретной накладной по её идентификационному номеру
 	Optional<DataElementInvoices> getDataElementInvoicesByNumber(String numberInvoices);
 	
-	//For execute select command of the table invoices
+	//Возвращение информации о всех накладных, содержащихся в таблице Invoices
 	List<Optional<DataElementInvoices>> getDataElementInvoicesAll();
 	
-	//Adding an item to the invoices table
+	//Добавление информации о накладной в таблицу Invoices
 	void insertDataElementInvoices(String numberInvoice, String nameSupplier, short totalWagons, 
 			String arrivalTrainDate, String departureTrainDate);
 	
-	//Updating the invoices record
+	//Обновление одной конкретной записи о накладной в таблице Invoices
 	void updateDataElementInvoices(String numberInvoice, String nameSupplier, short totalWagons, 
 			String arrivalTrainDate, String departureTrainDate);
 	
-	//Delete the invoices record
+	//Удаление одной конкретной записи о накладной, по её идентификационному номеру
 	void deleteDataElementInvoices(String numberInvoice);
 	
 	//****************************************
-	//Returns an object from the database by the number of the register
+	//Возвращение информации об одной записи в таблице соответствия полувагонов накладным
 	Optional<DataElementRegister> getDataElementRegisterById(String fkNumberInvoice, int numberWagon);
 		
-	//For execute select command of the table register
+	//Возвращение информации о всех записях в таблице соответствия полувагонов накладным
 	List<Optional<DataElementRegister>> getDataElementRegisterAll();
 		
-	//Adding an item to the register table
+	//Добавление информации о накладной и полувагоне
 	void insertDataElementRegister(String fkNumberInvoice, int numberWagon, short serialNumber, float sD);
 		
-	//Updating the register record
+	//Обновление информации о накладной и полувагоне
 	void updateDataElementRegister(String fkNumberInvoice, int numberWagon, short serialNumber, float sD);
 		
-	//Delete the register record
+	//Удаление записи о накладной и полувагоне
 	void deleteDataElementRegister(String fkNumberInvoice, int numberWagon);
 	
-	//Update actual serial number of the wagon in register record
+	//Обновление значения актуального порядкового номера (вычисляется по прибытии полувагона)
 	void updateDataElementRegisterActualNumber(String fkNumberInvoice, int numberWagon, short actualSerialNumber);
 }

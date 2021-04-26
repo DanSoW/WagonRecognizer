@@ -11,7 +11,7 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 //***************************************************
-//Configuration for the database
+//Конфигурация базы данных
 //***************************************************
 
 @Configuration

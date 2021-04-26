@@ -1,11 +1,15 @@
 package com.server.database.elements;
 
+//***************************************
+//Единица данных для таблицы Invoices
+//***************************************
+
 public class DataElementInvoices {
-	private String numberInvoice;
-	private String nameSupplier;
-	private short totalWagons;
-	private String arrivalTrainDate;
-	private String departureTrainDate;
+	private String numberInvoice;			//Идентификационный номер накладной
+	private String nameSupplier;			//Название поставщика
+	private short totalWagons;				//Общее число полувагонов
+	private String arrivalTrainDate;		//Дата прибытия состава полувагонов
+	private String departureTrainDate;		//Дата отправки состава полувагонов
 	
 	public DataElementInvoices(String numberInvoice, String nameSupplier, 
 			short totalWagons, String arrivalTrainDate, String departureTrainDate) {

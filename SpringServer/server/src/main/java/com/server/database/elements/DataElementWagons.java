@@ -1,14 +1,14 @@
 package com.server.database.elements;
 
 //***************************************
-//Database element for the Wagons table
+//Единица данных для таблицы Wagons
 //***************************************
 
 public class DataElementWagons {
-	private int numberWagon;				//Recognized wagon identification number
-	private String arrivalDate;				//Arrival of the wagon
-	private String imagePath;				//Path to the recognized image on the server
-	private double levelCorrectRecognize;	//The level of correct recognition
+	private int numberWagon;				//Идентификационный номер полувагона
+	private String arrivalDate;				//Дата прибытия полувагона
+	private String imagePath;				//Путь к изображению распознанного полувагона в локальном хранилище сервера
+	private double levelCorrectRecognize;	//Уровень корректного распознования (чем ниже значение, тем лучше)
 	
 	public DataElementWagons(int numberWagon, String arrivalDate, String imagePath, double levelCorrectRecognize) {
 		this.numberWagon = numberWagon;

@@ -1,5 +1,12 @@
 package com.server.exceptions;
 
+//************************************************************
+//Класс для обработки исключения, возникающее
+//тогда, когда по данному идентификационному номеру накладной
+//и полувагона не было найдено ни одной записи в таблице
+//соответствия полувагона конкретной накладной
+//************************************************************
+
 public class RegisterNotFoundException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	private String numberInvoice;

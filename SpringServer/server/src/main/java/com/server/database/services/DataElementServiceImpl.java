@@ -28,7 +28,6 @@ public class DataElementServiceImpl implements DataElementService {
 		this.dataDao = dDao;
 	}
 	
-	
 	@Override
 	public List<DataElementWagons> getDataElementWagonsAll() {
 		List<Optional<DataElementWagons>> wagons = this.dataDao.getDataElementWagonsAll();
@@ -131,7 +130,6 @@ public class DataElementServiceImpl implements DataElementService {
 	public void deleteDataElementRegister(String fkNumberInvoice, int numberWagon) {
 		this.dataDao.deleteDataElementRegister(fkNumberInvoice, numberWagon);	
 	}
-
 
 	@Override
 	public void updateDataElementRegisterActualNumber(String fkNumberInvoice, int numberWagon,

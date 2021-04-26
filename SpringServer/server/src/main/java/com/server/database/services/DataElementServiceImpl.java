@@ -131,4 +131,11 @@ public class DataElementServiceImpl implements DataElementService {
 	public void deleteDataElementRegister(String fkNumberInvoice, int numberWagon) {
 		this.dataDao.deleteDataElementRegister(fkNumberInvoice, numberWagon);	
 	}
+
+
+	@Override
+	public void updateDataElementRegisterActualNumber(String fkNumberInvoice, int numberWagon,
+			short actualSerialNumber) {
+		this.dataDao.updateDataElementRegisterActualNumber(fkNumberInvoice, numberWagon, actualSerialNumber);
+	}
 }

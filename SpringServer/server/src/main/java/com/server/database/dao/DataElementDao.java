@@ -57,4 +57,7 @@ public interface DataElementDao {
 		
 	//Delete the register record
 	void deleteDataElementRegister(String fkNumberInvoice, int numberWagon);
+	
+	//Update actual serial number of the wagon in register record
+	void updateDataElementRegisterActualNumber(String fkNumberInvoice, int numberWagon, short actualSerialNumber);
 }

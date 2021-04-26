@@ -74,8 +74,12 @@ public class DataElementDaoImpl implements DataElementDao {
 	+ ":" + NAME_ATTRIBUT_LEVEL_CORRECT + ")";
 	
 	private static final String SQL_SELECT_WAGONS = "SELECT * FROM " + NAME_WAGONS_TABLE + ";";
-	private static final String SQL_SET_ARRIVAL_MARK = 
+	private static final String SQL_SET_ARRIVAL_MARK_TRUE = 
 			"UPDATE " + NAME_REGISTER_TABLE + " SET " + NAME_ATTRIBUT_ARRIVAL_MARK + "=TRUE"
+			+ " WHERE " + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + "=:" + NAME_ATTRIBUT_NUMBER_WAGON + ";";
+	
+	private static final String SQL_SET_ARRIVAL_MARK_FALSE = 
+			"UPDATE " + NAME_REGISTER_TABLE + " SET " + NAME_ATTRIBUT_ARRIVAL_MARK + "=FALSE"
 			+ " WHERE " + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + "=:" + NAME_ATTRIBUT_NUMBER_WAGON + ";";
 	
 	private static final String SQL_CREATE_TABLE_WAGONS = "CREATE TABLE IF NOT EXISTS " + NAME_WAGONS_TABLE + " ( " +
@@ -149,7 +153,7 @@ public class DataElementDaoImpl implements DataElementDao {
 	+ ":" + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + ", "
 	+ "FALSE, "
 	+ ":" + NAME_ATTRIBUT_SERIAL_NUMBER 
-	+ ", NULL, " 
+	+ ", 0, " 
 	+ ":" + NAME_ATTRIBUT_SD + ");";
 	private static final String SQL_SELECT_REGISTER = "SELECT * FROM " + NAME_REGISTER_TABLE + ";";
 	
@@ -167,6 +171,12 @@ public class DataElementDaoImpl implements DataElementDao {
 	private static final String SQL_UPDATE_TABLE_REGISTER = "UPDATE " + NAME_REGISTER_TABLE
 			+ " SET " + NAME_ATTRIBUT_SERIAL_NUMBER + "=:" + NAME_ATTRIBUT_SERIAL_NUMBER
 			+ ", " + NAME_ATTRIBUT_SD + "=:" + NAME_ATTRIBUT_SD
+			+ " WHERE " + NAME_ATTRIBUT_REF_NUMBER_INVOICE + "=:" + NAME_ATTRIBUT_REF_NUMBER_INVOICE
+			+ " AND " + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + "=:" + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON
+			+ ";";
+	
+	private static final String SQL_UPDATE_ACTUAL_SERIAL_NUMBER = "UPDATE " + NAME_REGISTER_TABLE
+			+ " SET " + NAME_ATTRIBUT_ACTUAL_SERIAL_NUMBER + "=:" + NAME_ATTRIBUT_ACTUAL_SERIAL_NUMBER
 			+ " WHERE " + NAME_ATTRIBUT_REF_NUMBER_INVOICE + "=:" + NAME_ATTRIBUT_REF_NUMBER_INVOICE
 			+ " AND " + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON + "=:" + NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON
 			+ ";";
@@ -262,7 +272,7 @@ public class DataElementDaoImpl implements DataElementDao {
 		//Setting the arrival label
 		MapSqlParameterSource params1 = new MapSqlParameterSource();
 		params1.addValue(NAME_ATTRIBUT_NUMBER_WAGON, numberWagon);
-		jdbcTemplate.update(SQL_SET_ARRIVAL_MARK, params1);
+		jdbcTemplate.update(SQL_SET_ARRIVAL_MARK_TRUE, params1);
 	}
 	
 	@Override
@@ -281,6 +291,11 @@ public class DataElementDaoImpl implements DataElementDao {
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		params.addValue(NAME_ATTRIBUT_NUMBER_WAGON, numberWagon);
 		jdbcTemplate.update(SQL_DELETE_RECORD_WAGONS, params);
+		
+		//Setting the arrival label
+		MapSqlParameterSource params1 = new MapSqlParameterSource();
+		params1.addValue(NAME_ATTRIBUT_NUMBER_WAGON, numberWagon);
+		jdbcTemplate.update(SQL_SET_ARRIVAL_MARK_FALSE, params1);
 	}
 	
 	//*************************************
@@ -395,5 +410,15 @@ public class DataElementDaoImpl implements DataElementDao {
 		params.addValue(NAME_ATTRIBUT_REF_NUMBER_INVOICE, fkNumberInvoice);
 		params.addValue(NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON, numberWagon);
 		jdbcTemplate.update(SQL_DELETE_RECORD_REGISTER, params);
+	}
+
+	@Override
+	public void updateDataElementRegisterActualNumber(String fkNumberInvoice, int numberWagon,
+			short actualSerialNumber) {
+		MapSqlParameterSource params = new MapSqlParameterSource();
+		params.addValue(NAME_ATTRIBUT_REF_NUMBER_INVOICE, fkNumberInvoice);
+		params.addValue(NAME_ATTRIBUT_FOR_THIS_NUMBER_WAGON, numberWagon);
+		params.addValue(NAME_ATTRIBUT_ACTUAL_SERIAL_NUMBER, actualSerialNumber);
+		jdbcTemplate.update(SQL_UPDATE_ACTUAL_SERIAL_NUMBER, params);
 	}
 }

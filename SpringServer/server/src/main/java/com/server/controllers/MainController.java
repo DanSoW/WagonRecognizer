@@ -137,10 +137,19 @@ public class MainController{
 				break;
 			}
 		}
-		registers.clear();
 		
 		if(numberInvoice.equals(""))
 			throw new Exception("Error! The wagon with this number is not present in any invoice!");
+		
+		short max = 0;
+		for(int i = 0; i < registers.size(); i++) {
+			if(registers.get(i).getFkNumberInvoice().equals(numberInvoice)){
+				if(registers.get(i).getActualSerialNumber() > max) {
+					max = registers.get(i).getActualSerialNumber();
+				}
+			}
+		}
+		registers.clear();
 		
 		List<DataElementInvoices> invoices = dataService.getDataElementInvoicesAll();
 
@@ -170,6 +179,8 @@ public class MainController{
 				request.getArrivalDate(),
 				request.getImagePath(),
 				request.getLevelCorrectRecognize());
+		
+		dataService.updateDataElementRegisterActualNumber(numberInvoice, request.getNumberWagon(), (short)(max+1));
 	}
 	
 	@PostMapping(value = "/wagons/update")
@@ -249,7 +260,21 @@ public class MainController{
 		if(findWagon == null)
 			throw new Exception("Error! An entry with this wagon number does not exist in the registration list!");
 		
+		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
+		int index = (-1);
+		for(int i = 0; i < registers.size(); i++) {
+			if(registers.get(i).getNumberWagon() == request.getNumberWagon()) {
+				index = i;
+				break;
+			}
+		}
+		
+		if(index < 0)
+			throw new Exception("Error! There is no record with this wagon number and invoice number in the registration table!");
+		
+		(new File(findWagon.getImagePath())).delete(); //Deleting a file stored on the server
 		dataService.deleteDataElementWagons(request.getNumberWagon());
+		dataService.updateDataElementRegisterActualNumber(registers.get(index).getFkNumberInvoice(), request.getNumberWagon(), (short)0);
 	}
 	
 	//**************************************************
@@ -363,6 +388,15 @@ public class MainController{
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		
+		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
+		for(int i = 0; i < registers.size(); i++) {
+			if(registers.get(i).getFkNumberInvoice().equals(request.getNumberInvoice())) {
+				dataService.deleteDataElementRegister(registers.get(i).getFkNumberInvoice(),
+						registers.get(i).getNumberWagon());
+			}
+		}
+		registers.clear();
+		
 		dataService.deleteDataElementInvoices(request.getNumberInvoice());
 	}
 	
@@ -412,6 +446,8 @@ public class MainController{
 		for(DataElementRegister i : register) {
 			if(i.getNumberWagon() == request.getNumberWagon()) {
 				throw new Exception("Error! A wagon with this ID is already registered!");
+			}else if(i.getSerialNumber() == request.getSerialNumber()) {
+				throw new Exception("Error! The car with this serial number is already present on this invoice!");
 			}else if(i.getFkNumberInvoice().equals(request.getFkNumberInvoice())) {
 				count++;
 			}
@@ -474,6 +510,14 @@ public class MainController{
 		if(request.getSerialNumber() > total)
 			throw new Exception("Error! The serial number in the train can not be greater than the number of wagons present in the train!");
 		
+		List<DataElementRegister> register = dataService.getDataElementRegisterAll();
+		for(DataElementRegister i : register) {
+			if(i.getSerialNumber() == request.getSerialNumber()) {
+				throw new Exception("Error! The car with this serial number is already present on this invoice!");
+			}
+		}
+		register.clear();
+		
 		dataService.updateDataElementRegister(
 				request.getFkNumberInvoice(),
 				request.getNumberWagon(),
@@ -493,6 +537,31 @@ public class MainController{
 		if(number.length() != SIZE_NUMBER_WAGON)
 			throw new Exception("Error! The wagon number must consist of " + String.valueOf(SIZE_NUMBER_WAGON) + " numbers!");
 		
+		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
+		int index = (-1);
+		for(int i = 0; i < registers.size(); i++) {
+			if((registers.get(i).getFkNumberInvoice().equals(request.getFkNumberInvoice()))
+					&& (registers.get(i).getNumberWagon() == request.getNumberWagon())) {
+				index = i;
+				break;
+			}
+		}
+		
+		if(index < 0)
+			throw new Exception("Error! There is no record with this wagon number and invoice number in the registration table!");
+		
+		short actualSerialNumber = registers.get(index).getActualSerialNumber();
+		
+		dataService.deleteDataElementWagons(registers.get(index).getNumberWagon());
 		dataService.deleteDataElementRegister(request.getFkNumberInvoice(), request.getNumberWagon());
+		
+		registers = dataService.getDataElementRegisterAll();
+		for(int i = 0; i < registers.size(); i++) {
+			if(registers.get(i).getFkNumberInvoice().equals(request.getFkNumberInvoice())
+					&& (registers.get(i).getActualSerialNumber() > actualSerialNumber)) {
+				dataService.updateDataElementRegisterActualNumber(registers.get(i).getFkNumberInvoice(), 
+						registers.get(i).getNumberWagon(), (short)(registers.get(i).getActualSerialNumber() - 1));
+			}
+		}
 	}
 }

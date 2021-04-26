@@ -26,4 +26,5 @@ public interface DataElementService {
 	void insertDataElementRegister(String fkNumberInvoice, int numberWagon, short serialNumber, float sD);
 	void updateDataElementRegister(String fkNumberInvoice, int numberWagon, short serialNumber, float sD);
 	void deleteDataElementRegister(String fkNumberInvoice, int numberWagon);
+	public void updateDataElementRegisterActualNumber(String fkNumberInvoice, int numberWagon, short actualSerialNumber);
 }

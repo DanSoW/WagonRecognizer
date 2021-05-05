@@ -19,7 +19,7 @@ public class RegisterNotFoundException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return "The record of registration with number invoice " + this.numberInvoice + " and with number wagon "
-				+ this.numberWagon + " not found!";
+		return "Записи с номером накладной " + this.numberInvoice + " и номером полувагона "
+				+ this.numberWagon + " не найдено!";
 	}
 }

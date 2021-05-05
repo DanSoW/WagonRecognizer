@@ -32,6 +32,26 @@ public class DataValidator {
         return true;
     }
 
+    public static boolean isFloatNumber(String text){
+        if((text == null) || (text.length() == 0))
+            return false;
+
+        short countPoint = 0;
+        for(int i = 0; i < text.length(); i++){
+            if((!Character.isDigit(text.charAt(i))) && (text.charAt(i) != '.')){
+                return false;
+            }
+
+            if(text.charAt(i) == '.')
+                countPoint++;
+        }
+
+        if(countPoint > 1)
+            return false;
+
+        return true;
+    }
+
     public static boolean dateTimeValidator(String dateDeparture, String dateArrival){
         if((!dateTextValidator(dateDeparture)) || (!dateTextValidator(dateArrival)))
             return false;

@@ -51,11 +51,11 @@ public class FileLoadController {
                 stream.close();
                 return fileData.getAbsolutePath();
 			}catch(Exception e) {
-				throw new Exception("Ошибка! Не удалось загрузить файл!");
+				throw new Exception("Не удалось загрузить файл!");
 			}
 		}
 		
-		throw new Exception("Ошибка! Нет входных данных!");
+		throw new Exception("Нет входных данных!");
 	}
 	
 	//Загрузка изображения с сервера на клиентскую часть приложения
@@ -70,21 +70,21 @@ public class FileLoadController {
                 Files.copy(file.toPath(), response.getOutputStream());
                 response.getOutputStream().flush();
             } catch (IOException e) {
-                throw new Exception("Ошибка! Не удалось загрузить файл!");
+                throw new Exception("Не удалось загрузить файл!");
             }
         }
         
-        throw new Exception("Ошибка! Файла с данным именем нет на сервере!");
+        throw new Exception("Файла с данным именем нет на сервере!");
     }
 	
 	//Возвращает абсолютный путь к файлу, сохраненному на сервере или ошибку, в случае не существования файла на сервере
-	@RequestMapping(value = "/load/filepath/", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = "/load/filepath", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public DataElementImageFilePath getAbsoluteFilePath(@RequestParam String fileName) throws Exception {
 		File file = new File(nameDirectory + "\\" + fileName);
         if (file.exists()){
             return new DataElementImageFilePath(file.getAbsolutePath());
         }
         
-        throw new Exception("Ошибка! Файла с данным именем нет на сервере!");
+        throw new Exception("Файла с данным именем нет на сервере!");
     }
 }

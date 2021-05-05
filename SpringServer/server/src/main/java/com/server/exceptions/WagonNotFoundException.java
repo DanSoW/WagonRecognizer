@@ -15,7 +15,7 @@ public class WagonNotFoundException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return "The wagon with number = " + id
-				+ " not found!";
+		return "Записи с номером полувагона " + id
+				+ " не найдено!";
 	}
 }

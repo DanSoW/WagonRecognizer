@@ -92,9 +92,9 @@ public class MainController{
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void updateMaxSizeNumberWagon(@Valid @RequestBody SizeNumberWagon request) throws Exception {
 		if(request.getSize() <= 0)
-			throw new Exception("Ошибка! Число цифр в номере полувагона не может быть меньше нуля или равно нулю!");
+			throw new Exception("Число цифр в номере полувагона не может быть меньше нуля или равно нулю!");
 		else if(request.getSize() >= 10)
-			throw new Exception("Ошибка! Число цифр в номере полувагона не может быть больше 10!");
+			throw new Exception("Число цифр в номере полувагона не может быть больше 10!");
 		SIZE_NUMBER_WAGON = request.getSize();
 	}
 	
@@ -102,9 +102,9 @@ public class MainController{
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void updateMaxSizeNumberWagon(@Valid @RequestBody SizeMinNumberInvoice request) throws Exception {
 		if(request.getSize() < 2)
-			throw new Exception("Ошибка! Минимальное число символов в номере накладной не должно быть меньше 2!");
+			throw new Exception("Минимальное число символов в номере накладной не должно быть меньше 2!");
 		else if(request.getSize() > 10)
-			throw new Exception("Ошибка! Максимальное число символов в номере накладной не должно быть больше 2!");
+			throw new Exception("Максимальное число символов в номере накладной не должно быть больше 2!");
 		SIZE_MIN_NUMBER_INVOICE = request.getSize();
 	}
 	
@@ -114,7 +114,7 @@ public class MainController{
 	public DataElementWagons getDataElementWagons(@RequestParam("numberWagon") int numberWagon) throws Exception{
 		String number = String.valueOf(numberWagon);
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		return dataService.getDataElementWagons(numberWagon);
 	}
 	
@@ -129,11 +129,11 @@ public class MainController{
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void insertDataElementWagons(@Valid @RequestBody DataElementRequestInsertWagons request) throws Exception {
 		if(!(new File(request.getImagePath()).exists()))
-			throw new Exception("Ошибка! Изображение с данным именем не найдено в локальном хранилище сервера!");
+			throw new Exception("Изображение с данным именем не найдено в локальном хранилище сервера!");
 		
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		
 		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
 		String numberInvoice = "";
@@ -145,7 +145,7 @@ public class MainController{
 		}
 		
 		if(numberInvoice.equals(""))
-			throw new Exception("Ошибка! Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
+			throw new Exception("Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
 		
 		short max = 0;
 		for(int i = 0; i < registers.size(); i++) {
@@ -165,7 +165,7 @@ public class MainController{
 			     if(format.parse(request.getArrivalDate()).before(
 			            format.parse(i.getDepartureTrainDate())
 			     )){
-			    	 throw new Exception("Ошибка! Прибытие полувагона не может быть раньше, чем отправка всего состава по данной накладной!");
+			    	 throw new Exception("Прибытие полувагона не может быть раньше, чем отправка всего состава по данной накладной!");
 			    }
 			     break;
 			}
@@ -175,7 +175,7 @@ public class MainController{
 		List<DataElementWagons> wagons = dataService.getDataElementWagonsAll();
 		for(DataElementWagons i : wagons) {
 			if(i.getNumberWagon() == request.getNumberWagon()) {
-				throw new Exception("Ошибка! Полувагон с данным идентификационным номером уже зарегистрирован в базе данных!");
+				throw new Exception("Полувагон с данным идентификационным номером уже зарегистрирован в базе данных!");
 			}
 		}
 		wagons.clear();
@@ -194,10 +194,10 @@ public class MainController{
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void updateDataElementWagons(@Valid @RequestBody DataElementRequestInsertWagons request) throws Exception {
 		if(!(new File(request.getImagePath())).exists())
-			throw new Exception("Ошибка! Изображение с данным именем не найдено в локальном хранилище сервера!");
+			throw new Exception("Изображение с данным именем не найдено в локальном хранилище сервера!");
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		
 		List<DataElementWagons> wagons = dataService.getDataElementWagonsAll();
 		DataElementWagons findWagon = null;
@@ -210,7 +210,7 @@ public class MainController{
 		wagons.clear();
 		
 		if(findWagon == null)
-			throw new Exception("Ошибка! Полувагона с данным идентификационным номером не обнаружено в таблице прибывших полувагонов!");
+			throw new Exception("Полувагона с данным идентификационным номером не обнаружено в таблице прибывших полувагонов!");
 		
 		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
 		String numberInvoice = "";
@@ -223,7 +223,7 @@ public class MainController{
 		registers.clear();
 		
 		if(numberInvoice.equals(""))
-			throw new Exception("Ошибка! Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
+			throw new Exception("Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
 		
 		List<DataElementInvoices> invoices = dataService.getDataElementInvoicesAll();
 
@@ -233,7 +233,7 @@ public class MainController{
 			     if(format.parse(request.getArrivalDate()).before(
 			            format.parse(i.getDepartureTrainDate())
 			     )){
-			    	 throw new Exception("Ошибка! Прибытие полувагона не может быть раньше, чем отправка всего состава по данной накладной!");
+			    	 throw new Exception("Прибытие полувагона не может быть раньше, чем отправка всего состава по данной накладной!");
 			    }
 			     break;
 			}
@@ -253,7 +253,7 @@ public class MainController{
 	public void deleteDataElementWagons(@Valid @RequestBody DataElementRequestDeleteWagons request) throws Exception {
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		
 		List<DataElementWagons> wagons = dataService.getDataElementWagonsAll();
 		DataElementWagons findWagon = null;
@@ -266,7 +266,7 @@ public class MainController{
 		wagons.clear();
 		
 		if(findWagon == null)
-			throw new Exception("Ошибка! Полувагона с данным идентификационным номером не обнаружено в таблице прибывших полувагонов!");
+			throw new Exception("Полувагона с данным идентификационным номером не обнаружено в таблице прибывших полувагонов!");
 		
 		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
 		int index = (-1);
@@ -278,7 +278,7 @@ public class MainController{
 		}
 		
 		if(index < 0)
-			throw new Exception("Ошибка! Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
+			throw new Exception("Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
 		
 		(new File(findWagon.getImagePath())).delete(); 		//Удаление файла с изображением полувагона из локального хранилища сервера
 		dataService.deleteDataElementWagons(request.getNumberWagon());
@@ -292,7 +292,7 @@ public class MainController{
 	public DataElementInvoices getDataElementInvoices(@RequestParam String numberInvoice) throws Exception {
 		if((numberInvoice.length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (numberInvoice.length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		return dataService.getDataElementInvoices(numberInvoice);
@@ -310,29 +310,29 @@ public class MainController{
 	public void insertDataElementInvoices(@Valid @RequestBody DataElementRequestInsertInvoices request) throws Exception {
 		if((request.getNumberInvoice().length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (request.getNumberInvoice().length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		
 		if(request.getTotalWagons() <= 0)
-			throw new Exception("Ошибка! Общее число прибывающих полувагонов по накладной не может быть меньше либо равно нулю!");
+			throw new Exception("Общее число прибывающих полувагонов по накладной не может быть меньше либо равно нулю!");
 		
 		try {
 			DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 		     if(format.parse(request.getArrivalTrainDate()).before(
 		            format.parse(request.getDepartureTrainDate())
 		     )){
-		    	 throw new Exception("Ошибка! Дата приезда состава не может быть раньше даты отправки состава!");
+		    	 throw new Exception("Дата приезда состава не может быть раньше даты отправки состава!");
 		    }
 		}catch(ParseException e) {
-			throw new Exception("Ошибка! Дата приезда или отправки состава представлена в не корректной форме!"
+			throw new Exception("Дата приезда или отправки состава представлена в не корректной форме!"
 					+ " Форма представления должна быть в формате гггг-мм-дд");
 		}
 		
 		List<DataElementInvoices> invoices = dataService.getDataElementInvoicesAll();
 		for(DataElementInvoices i : invoices) {
 			if(i.getNumberInvoice().equals(request.getNumberInvoice())) {
-				throw new Exception("Ошибка! Идентификационный номер данной накладной уже присутствует в базе данных!");
+				throw new Exception("Идентификационный номер данной накладной уже присутствует в базе данных!");
 			}
 		}
 		invoices.clear();
@@ -351,24 +351,40 @@ public class MainController{
 	public void updateDataElementInvoices(@Valid @RequestBody DataElementRequestInsertInvoices request) throws Exception {
 		if((request.getNumberInvoice().length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (request.getNumberInvoice().length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		
 		if(request.getTotalWagons() <= 0)
-			throw new Exception("Ошибка! Общее число прибывающих полувагонов по накладной не может быть меньше либо равно нулю!");
+			throw new Exception("Общее число прибывающих полувагонов по накладной не может быть меньше либо равно нулю!");
 		
 		try {
 			DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
 		     if(format.parse(request.getArrivalTrainDate()).before(
 		            format.parse(request.getDepartureTrainDate())
 		     )){
-		    	 throw new Exception("Ошибка! Дата приезда состава не может быть раньше даты отправки состава!");
+		    	 throw new Exception("Дата приезда состава не может быть раньше даты отправки состава!");
 		    }
 		}catch(ParseException e) {
-			throw new Exception("Ошибка! Дата приезда или отправки состава представлена в не корректной форме!"
+			throw new Exception("Дата приезда или отправки состава представлена в не корректной форме!"
 					+ " Форма представления должна быть в формате гггг-мм-дд");
 		}
+		
+		List<DataElementRegister> reg = dataService.getDataElementRegisterAll();
+		short count = 0;
+		short maxSerialNumber = 0;
+		for(DataElementRegister i : reg) {
+			if(i.getFkNumberInvoice().equals(request.getNumberInvoice())) {
+				count++;
+				if(maxSerialNumber < i.getSerialNumber())
+					maxSerialNumber = i.getSerialNumber();
+			}
+		}
+		reg.clear();
+		
+		if((count > request.getTotalWagons()) || (maxSerialNumber > request.getTotalWagons()))
+			throw new Exception("Общее число полувагонов не должно быть меньше числа полувагонов, которые уже зарегистрированны по данной"
+					+ " накладной!");
 		
 		dataService.updateDataElementInvoices(
 				request.getNumberInvoice(),
@@ -384,7 +400,7 @@ public class MainController{
 	public void deleteDataElementInvoices(@Valid @RequestBody DataElementRequestDeleteInvoices request) throws Exception {
 		if((request.getNumberInvoice().length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (request.getNumberInvoice().length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		
@@ -406,12 +422,12 @@ public class MainController{
 	public DataElementRegister getDataElementRegister(@RequestParam String fkNumberInvoice, @RequestParam int numberWagon) throws Exception {
 		if((fkNumberInvoice.length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (fkNumberInvoice.length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		String number = String.valueOf(numberWagon);
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		return dataService.getDataElementRegister(fkNumberInvoice, numberWagon);
 	}
 		
@@ -427,29 +443,33 @@ public class MainController{
 	public void insertDataElementRegister(@Valid @RequestBody DataElementRequestInsertRegister request) throws Exception {
 		if((request.getFkNumberInvoice().length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (request.getFkNumberInvoice().length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		
 		if(request.getsD() < 0)
-			throw new Exception("Ошибка! Значение Sd% не может быть меньше нуля!");
+			throw new Exception("Значение Sd% не может быть меньше нуля!");
 		
 		if(request.getSerialNumber() <= 0)
-			throw new Exception("Ошибка! Порядковый номер полувагона в составе не может быть меньше либо равен 0!");
+			throw new Exception("Порядковый номер полувагона в составе не может быть меньше либо равен 0!");
 		
 		List<DataElementRegister> register = dataService.getDataElementRegisterAll();
 		
 		int count = 0;
 		for(DataElementRegister i : register) {
 			if(i.getNumberWagon() == request.getNumberWagon()) {
-				throw new Exception("Ошибка! Полувагон с данным идентификационным номером уже зарегистрирован в таблице соответствия полувагонов"
+				throw new Exception("Полувагон с данным идентификационным номером уже зарегистрирован в таблице соответствия полувагонов"
 						+ " накладным!");
-			}else if(i.getSerialNumber() == request.getSerialNumber()) {
-				throw new Exception("Ошибка! Полувагон с данным порядковым номером уже присутствует в таблице соответствия полувагонов накладным!");
-			}else if(i.getFkNumberInvoice().equals(request.getFkNumberInvoice())) {
+			}
+			
+			if((i.getSerialNumber() == request.getSerialNumber()) && (i.getFkNumberInvoice().equals(request.getFkNumberInvoice()))) {
+				throw new Exception("Полувагон с данным порядковым номером уже присутствует в таблице соответствия полувагонов накладным!");
+			}
+			
+			if(i.getFkNumberInvoice().equals(request.getFkNumberInvoice())) {
 				count++;
 			}
 		}
@@ -460,7 +480,7 @@ public class MainController{
 		for(DataElementInvoices i : invoice) {
 			if((i.getNumberInvoice().equals(request.getFkNumberInvoice())) 
 					&& (i.getTotalWagons() == count))
-				throw new Exception("Ошибка! Превышен лимит добавления информации о полувагонах к накладной! Записей может быть не более " + 
+				throw new Exception("Превышен лимит добавления информации о полувагонах к накладной! Записей может быть не более " + 
 					String.valueOf(count));
 			
 			if(i.getNumberInvoice().equals(request.getFkNumberInvoice())) {
@@ -470,8 +490,12 @@ public class MainController{
 		}
 		invoice.clear();
 		
+		if(total == 0) {
+			throw new Exception("Накладной с данным идентификатором нет в базе данных!");
+		}
+		
 		if(request.getSerialNumber() > total)
-			throw new Exception("Ошибка! Порядковый номер полувагона в составе не может превышать общего числа полувагонов прибывающих "
+			throw new Exception("Порядковый номер полувагона в составе не может превышать общего числа полувагонов прибывающих "
 					+ "по данной накладной!");
 		
 		dataService.insertDataElementRegister(
@@ -487,18 +511,18 @@ public class MainController{
 	public void updateDataElementRegister(@Valid @RequestBody DataElementRequestInsertRegister request) throws Exception {
 		if((request.getFkNumberInvoice().length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (request.getFkNumberInvoice().length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		
 		if(request.getsD() < 0)
-			throw new Exception("Ошибка! Значение Sd% не может быть меньше нуля!");
+			throw new Exception("Значение Sd% не может быть меньше нуля!");
 		
 		if(request.getSerialNumber() <= 0)
-			throw new Exception("Ошибка! Порядковый номер полувагона в составе не может быть меньше либо равен 0!");
+			throw new Exception("Порядковый номер полувагона в составе не может быть меньше либо равен 0!");
 		
 		List<DataElementInvoices> invoice = dataService.getDataElementInvoicesAll();
 		short total = 0;
@@ -510,16 +534,23 @@ public class MainController{
 		}
 		invoice.clear();
 		
+		if(total == 0) {
+			throw new Exception("Накладной с данным идентификатором нет в базе данных!");
+		}
+		
 		if(request.getSerialNumber() > total)
-			throw new Exception("Ошибка! Порядковый номер полувагона в составе не может превышать общего числа полувагонов прибывающих "
+			throw new Exception("Порядковый номер полувагона в составе не может превышать общего числа полувагонов прибывающих "
 					+ "по данной накладной!");
 		
 		List<DataElementRegister> register = dataService.getDataElementRegisterAll();
 		for(DataElementRegister i : register) {
-			if(i.getSerialNumber() == request.getSerialNumber()) {
-				throw new Exception("Ошибка! Полувагон с данным порядковым номером уже присутствует в таблице соответствия полувагонов накладным!");
+			if((i.getSerialNumber() != request.getSerialNumber())
+					&& (i.getNumberWagon() == request.getNumberWagon())) {
+				throw new Exception("Порядковый номер полувагона не изменяется! Чтобы изменить порядковый номер полувагона"
+						+ " необходимо удалить запись с данным порядковым номером и добавить на её основе новую, с новым порядковым номером!");
 			}
 		}
+		
 		register.clear();
 		
 		dataService.updateDataElementRegister(
@@ -535,12 +566,12 @@ public class MainController{
 	public void deleteDataElementRegister(@Valid @RequestBody DataElementRequestDeleteRegister request) throws Exception {
 		if((request.getFkNumberInvoice().length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (request.getFkNumberInvoice().length() > SIZE_MAX_NUMBER_INVOICE)) {
-			throw new Exception("Ошибка! Идентификационный номер накладной должен содержать общее число символов из диапазона ["
+			throw new Exception("Идентификационный номер накладной должен содержать общее число символов из диапазона ["
 					+ String.valueOf(SIZE_MIN_NUMBER_INVOICE) + "; " + String.valueOf(SIZE_MAX_NUMBER_INVOICE) + "]");
 		}
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
-			throw new Exception("Ошибка! Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
+			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
 		
 		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
 		int index = (-1);
@@ -553,7 +584,7 @@ public class MainController{
 		}
 		
 		if(index < 0)
-			throw new Exception("Ошибка! Полувагон с данным идентификационным номером по данной накладной не зарегистрирован!");
+			throw new Exception("Полувагон с данным идентификационным номером по данной накладной не зарегистрирован!");
 		
 		short actualSerialNumber = registers.get(index).getActualSerialNumber();
 		

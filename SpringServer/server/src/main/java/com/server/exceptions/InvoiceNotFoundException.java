@@ -15,6 +15,6 @@ public class InvoiceNotFoundException extends RuntimeException {
 	
 	@Override
 	public String getMessage() {
-		return "The invoice with number " + this.number + " not found!";
+		return "Записи с номером накладной " + this.number + " не найдено!";
 	}
 }

@@ -6,6 +6,7 @@ import client.data.DataInvoiceTableView;
 import client.network.DataNetwork;
 import client.validator.DataValidator;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +16,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 //**************************************************************
 //Программирование главного окна, с которого начинается запуск
@@ -29,6 +32,7 @@ public class Invoices extends Application {
 
     //взаимосвязи между окнами
     private Register _register = null;
+    private Wagons _wagons = null;
     private Stage _thisStage = null;
 
 
@@ -46,6 +50,10 @@ public class Invoices extends Application {
     private Button _updateInvoice = null;
     private Button _deleteInvoice = null;
 
+    private volatile boolean _readMark = true;    //метка о старте/завершении считывания данных с сервера
+    private volatile int _timeRead = 10000;       //время через которое будет считаны данные с сервера (обновление данных)
+    private Thread threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
+
     @Override
     public void start(Stage stage) throws Exception {
         _thisStage = stage;
@@ -58,6 +66,11 @@ public class Invoices extends Application {
 
         _register = new Register();
         Register.stageInvoices = _thisStage;
+
+        _wagons = new Wagons();
+        Wagons.stageInvoices = _thisStage;
+        Wagons.stageRegister = _register.GetStage();
+        Register.stageWagons = _wagons.GetStage();
 
         _txtNumberInvoice = (TextField)scene.lookup("#_txtNumberInvoice");
         _txtNameSupplier = (TextField)scene.lookup("#_txtNameSupplier");
@@ -84,6 +97,7 @@ public class Invoices extends Application {
             public void handle(ActionEvent event) {
                 _thisStage.hide();
                 _register.Show();
+                _readMark = false;
             }
         });
 
@@ -91,7 +105,45 @@ public class Invoices extends Application {
             @Override
             public void handle(ActionEvent event) {
                 _thisStage.hide();
-                //wagon.Show();
+                _wagons.Show();
+                _readMark = false;
+            }
+        });
+
+        _thisStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = false;
+            }
+        });
+
+        _thisStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = true;
+                threadReadData = new Thread(() -> {
+                    while(_readMark){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                readDataInvoices();
+                            }
+                        });
+
+                        try {
+                            threadReadData.sleep(_timeRead);
+                        } catch (InterruptedException e) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+                                }
+                            });
+                        }
+                    }
+                });
+
+                threadReadData.start();
             }
         });
 
@@ -118,8 +170,6 @@ public class Invoices extends Application {
         attrib1 = new TableColumn<DataInvoiceTableView, String>("Дата выезда состава");
         attrib1.setCellValueFactory(new PropertyValueFactory<DataInvoiceTableView, String>("departureTrainDate"));
         _table.getColumns().add(attrib1);
-
-        readDataInvoices();
 
         _table.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -304,12 +354,14 @@ public class Invoices extends Application {
     private void readDataInvoices(){
         if(_table == null)
             return;
+        _table.getItems().clear();
         DataElementInvoice[] elements = null;
 
         try {
             elements = DataNetwork.getListDataInvoices("http://localhost:8080/database/invoices/get/all");
         } catch (Exception e) {
             MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+            _readMark = false;
             return;
         }
 
@@ -326,6 +378,7 @@ public class Invoices extends Application {
 
     public static void MessageShow(Alert.AlertType type, String title, String message){
         Alert alert = new Alert(type);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);

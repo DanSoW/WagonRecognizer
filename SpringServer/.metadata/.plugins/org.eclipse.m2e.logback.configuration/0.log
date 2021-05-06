@@ -8009,3 +8009,37 @@
 2021-05-05 19:47:57,083 [Worker-78: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Projects\SpringServer\server\src\test\resources
 2021-05-05 19:47:59,080 [Worker-74: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
 2021-05-05 19:47:59,080 [Worker-74: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run
+2021-05-06 09:23:56,203 [Worker-3: Loading available Gradle versions] INFO  o.e.b.c.i.u.g.PublishedGradleVersions - Gradle version information cache is up-to-date. Trying to read.
+2021-05-06 09:25:26,829 [Worker-8: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
+2021-05-06 09:25:26,835 [Worker-8: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run
+2021-05-06 10:54:54,558 [Worker-63: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
+2021-05-06 10:54:54,559 [Worker-63: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run
+2021-05-06 10:58:59,356 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2021-05-06 10:58:59,356 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2021-05-06 10:58:59,367 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2021-05-06 10:58:59,404 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2021-05-06 10:58:59,409 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2021-05-06 10:58:59,409 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2021-05-06 10:58:59,409 [Worker-70: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Projects\SpringServer\server\src\test\resources
+2021-05-06 10:59:11,575 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2021-05-06 10:59:11,575 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2021-05-06 10:59:11,578 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2021-05-06 10:59:11,584 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2021-05-06 10:59:11,587 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2021-05-06 10:59:11,587 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2021-05-06 10:59:11,587 [Worker-72: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Projects\SpringServer\server\src\test\resources
+2021-05-06 10:59:15,756 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2021-05-06 10:59:15,756 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2021-05-06 10:59:15,757 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 1 resource
+2021-05-06 10:59:15,769 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2021-05-06 10:59:15,770 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2021-05-06 10:59:15,771 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered properties files.
+2021-05-06 10:59:15,771 [Worker-71: Building] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory C:\Projects\SpringServer\server\src\test\resources
+2021-05-06 10:59:17,947 [Worker-71: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
+2021-05-06 10:59:17,947 [Worker-71: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run
+2021-05-06 11:42:48,421 [Worker-83: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
+2021-05-06 11:42:48,421 [Worker-83: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run
+2021-05-06 11:47:05,742 [Worker-82: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
+2021-05-06 11:47:05,742 [Worker-82: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run
+2021-05-06 12:15:55,848 [Worker-96: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate - C:\Projects\SpringServer\server
+2021-05-06 12:15:55,848 [Worker-96: Launching New_configuration] INFO  o.e.m.i.launch.MavenLaunchDelegate -  mvn -Dserver.port=8080 -Ppom.xml -B spring-boot:run

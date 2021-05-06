@@ -3,6 +3,7 @@ package client;
 import client.data.*;
 import client.network.DataNetwork;
 import client.validator.DataValidator;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -13,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
@@ -36,6 +38,10 @@ public class Register {
     public static Stage stageInvoices = null;   //stage окна таблицы накладных
     public static Stage stageWagons = null;     //stage окна таблицы полувагонов
 
+    private volatile boolean _readMark = true;
+    private volatile int _timeRead = 10000;
+    private Thread threadReadData = null;
+
     public void Show(){
         if(this._thisStage == null)
             return;
@@ -46,6 +52,7 @@ public class Register {
         if(this._thisStage == null)
             return;
         this._thisStage.hide();
+        _readMark = false;
     }
 
     public Stage GetStage(){
@@ -82,6 +89,7 @@ public class Register {
             public void handle(ActionEvent event) {
                 _thisStage.hide();
                 stageInvoices.show();
+                _readMark = false;
             }
         });
 
@@ -90,6 +98,7 @@ public class Register {
             public void handle(ActionEvent event) {
                 _thisStage.hide();
                 stageWagons.show();
+                _readMark = false;
             }
         });
 
@@ -121,7 +130,43 @@ public class Register {
         attrib4.setCellValueFactory(new PropertyValueFactory<DataRegisterTableView, Float>("sD"));
         _table.getColumns().add(attrib4);
 
-        readDataRegister();
+        _thisStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = false;
+            }
+        });
+
+        _thisStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = true;
+                threadReadData = new Thread(() -> {
+                    while(_readMark){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                readDataRegister();
+                            }
+                        });
+
+                        try {
+                            threadReadData.sleep(_timeRead);
+                        } catch (InterruptedException e) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Invoices.MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+                                }
+                            });
+                            _readMark = false;
+                        }
+                    }
+                });
+
+                threadReadData.start();
+            }
+        });
 
         _table.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -304,12 +349,14 @@ public class Register {
     private void readDataRegister(){
         if(_table == null)
             return;
+        _table.getItems().clear();
         DataElementRegister[] elements = null;
 
         try {
             elements = DataNetwork.getListDataRegister("http://localhost:8080/database/register/get/all");
         } catch (Exception e) {
             Invoices.MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+            _readMark = false;
             return;
         }
 

@@ -62,7 +62,7 @@ public class FileLoadController {
 	@RequestMapping(value = "/load/{file_name:.+}", method = RequestMethod.GET)
     public void getFile(@PathVariable("file_name") String fileName, HttpServletResponse response) throws Exception {
 		File file = new File(nameDirectory + "\\" + fileName);
-        if (file.exists()){
+        if ((file.isFile()) && (file.exists())){
             response.setHeader("Content-disposition", "attachment;filename=" + fileName);
             response.setContentType("multipart/form-data");
  

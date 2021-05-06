@@ -18,6 +18,11 @@ import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 
+//**************************************************************
+//Программирование окна, взаимодействующего с таблицей
+//соответствия конкретного полувагона определённой накладной
+//**************************************************************
+
 public class Register {
 
     //элементы управления
@@ -152,7 +157,7 @@ public class Register {
 
                         try {
                             threadReadData.sleep(_timeRead);
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {

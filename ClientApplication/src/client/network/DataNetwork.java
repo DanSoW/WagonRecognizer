@@ -11,14 +11,21 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+//**************************************************************
+//Класс, с помощью которого происходит взаимодействие с серверной
+//частью приложения
+//**************************************************************
+
 public class DataNetwork {
+    //директория, в которой будут находиться загруженные изображения с локального серверного хранилища
     private static final String IMAGE_DIRECTORY = "Images";
 
+    //класс для обработки ошибок
     private class ErrorMessage{
         public String message;
     }
 
-    //функция добавления/обновления/удаления данных в базе данных
+    //обобщённая функция добавления/обновления/удаления данных в базе данных
     public static <T> void updateDataElement(String address, T dataInvoice) throws Exception{
         URL url = null;
         try {
@@ -34,13 +41,14 @@ public class DataNetwork {
             throw new Exception("Не удалось подключиться к серверу!");
         }
 
+        //настройка запроса
         http.setRequestMethod("POST");
         http.setDoOutput(true);
         http.setRequestProperty("Content-Type", "application/json");
 
         Gson g = new Gson();
 
-        String data = g.toJson(dataInvoice);
+        String data = g.toJson(dataInvoice);    //преобразование данных в JSON формат (строковое представление)
 
         byte[] out = data.getBytes(StandardCharsets.UTF_8);
 
@@ -61,6 +69,7 @@ public class DataNetwork {
 
         http.disconnect();
 
+        //обработка ошибки, которая была получена с сервера в виде ответа
         if((result != null) && (result.length() != 0) && (result.contains("message"))){
             ErrorMessage mes = g.fromJson(result, ErrorMessage.class);
             throw new Exception(mes.message);
@@ -98,7 +107,14 @@ public class DataNetwork {
 
         Gson g = new Gson();
 
-        DataElementInvoice[] dataElementInvoices = g.fromJson(response.toString(), DataElementInvoice[].class);
+        //конвертация JSON-строки в массив объектов типа DataElementInvoice
+        DataElementInvoice[] dataElementInvoices = null;
+
+        try{
+            dataElementInvoices = g.fromJson(response.toString(), DataElementInvoice[].class);
+        }catch (Exception e){
+            throw new Exception("При передачи данных с сервера произошла ошибка! Данные не могут быть получены!");
+        }
 
         return dataElementInvoices;
     }
@@ -134,7 +150,12 @@ public class DataNetwork {
 
         Gson g = new Gson();
 
-        DataElementRegister[] dataElementRegisters = g.fromJson(response.toString(), DataElementRegister[].class);
+        DataElementRegister[] dataElementRegisters = null;
+        try{
+            dataElementRegisters = g.fromJson(response.toString(), DataElementRegister[].class);
+        }catch(Exception e){
+            throw new Exception("При передачи данных с сервера произошла ошибка! Данные не могут быть получены!");
+        }
 
         return dataElementRegisters;
     }
@@ -170,7 +191,13 @@ public class DataNetwork {
 
         Gson g = new Gson();
 
-        DataElementWagon[] dataElementWagons = g.fromJson(response.toString(), DataElementWagon[].class);
+        DataElementWagon[] dataElementWagons = null;
+
+        try{
+            dataElementWagons = g.fromJson(response.toString(), DataElementWagon[].class);
+        }catch(Exception e){
+            throw new Exception("При передачи данных с сервера произошла ошибка! Данные не могут быть получены!");
+        }
 
         return dataElementWagons;
     }
@@ -192,19 +219,6 @@ public class DataNetwork {
             throw new Exception("Не удалось подключиться к серверу!");
         }
 
-        File f = new File(IMAGE_DIRECTORY);
-        if(!f.exists()) {
-            f.mkdir();
-        }
-
-        byte[] bytes = http.getInputStream().readAllBytes();
-        String[] data = address.split("\\/");
-        File file = new File(IMAGE_DIRECTORY + "\\" + data[(data.length - 1)]);
-        BufferedOutputStream stream =
-                new BufferedOutputStream(new FileOutputStream(file));
-        stream.write(bytes);
-        stream.close();
-
         String result = null;
 
         BufferedReader in = new BufferedReader(new InputStreamReader(http.getInputStream()));
@@ -217,14 +231,39 @@ public class DataNetwork {
         in.close();
         result = response.toString();
 
-        http.disconnect();
-
+        //обработка ошибки, в случае её возникновения на серверной части приложения
         if((result != null) && (result.length() != 0) && (result.contains("message"))){
             Gson g = new Gson();
             ErrorMessage mes = g.fromJson(result, ErrorMessage.class);
             throw new Exception(mes.message);
         }
 
+        http.disconnect();
+
+        try{
+            http = (HttpURLConnection) url.openConnection();
+        }catch (Exception e){
+            throw new Exception("Не удалось подключиться к серверу!");
+        }
+
+        File f = new File(IMAGE_DIRECTORY);
+        if(!f.exists()) {
+            f.mkdir();
+        }
+
+        InputStream inputStream = http.getInputStream();
+        byte[] bytes = inputStream.readAllBytes();
+        String[] data = address.split("\\/");
+        File file = new File(IMAGE_DIRECTORY + "\\" + data[(data.length - 1)]);
+
+        //запись данных загруженного файла в локальную директорию (временно или на долго)
+        BufferedOutputStream stream =
+                new BufferedOutputStream(new FileOutputStream(file));
+        stream.write(bytes);
+        stream.close();
+        http.disconnect();
+
+        //возврат абсолютного пути загруженного файла
         return file.getAbsolutePath();
     }
 }

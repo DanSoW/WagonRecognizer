@@ -1,7 +1,0 @@
-package com.server.database;
-
-import com.sun.istack.NotNull;
-
-public class DataElementRequestInsertRegister {
-
-}

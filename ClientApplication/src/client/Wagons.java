@@ -27,6 +27,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+//**************************************************************
+//Программирование окна, взаимодействующего с таблицей
+//зарегистрированных камерой полувагонов
+//**************************************************************
+
 public class Wagons {
     //элементы управления
     private MenuBar _menuBar = null;
@@ -42,7 +47,7 @@ public class Wagons {
     public CheckBox _deleteImage = null;
     public ImageView _currentImage = null;
 
-    private int _currentRow = (-1); //текущая строка в таблице, которую пользователь выбрал
+    private int _currentRow = (-1);             //текущая строка в таблице, которую пользователь выбрал
 
     private volatile boolean _readMark = true;
     private volatile int _timeRead = 10000;
@@ -146,7 +151,7 @@ public class Wagons {
 
                         try {
                             threadReadData.sleep(_timeRead);
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                             Platform.runLater(new Runnable() {
                                 @Override
                                 public void run() {
@@ -174,6 +179,8 @@ public class Wagons {
             }
         });
 
+        //обработка события, при нажатии кнопки с помощью которой изображение загружается из
+        //локального хранилища на серверной части приложения
         _loadImage.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -210,6 +217,8 @@ public class Wagons {
                     e.printStackTrace();
                 }
 
+                //если выбран пункт "удалить после загрузки", то изображение будет удалено из локального
+                //хранилища клиентского приложения
                 if(_deleteImage.isSelected()){
                     (new File(filePath)).delete();
                 }

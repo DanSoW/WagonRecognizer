@@ -1,5 +1,0 @@
-package com.server.exceptions;
-
-public class RegisterNotFoundException {
-
-}

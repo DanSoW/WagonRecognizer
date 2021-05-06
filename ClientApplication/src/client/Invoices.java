@@ -28,8 +28,6 @@ import javafx.stage.WindowEvent;
 
 public class Invoices extends Application {
 
-    //private Camera _camera = null;
-
     //взаимосвязи между окнами
     private Register _register = null;
     private Wagons _wagons = null;
@@ -58,12 +56,14 @@ public class Invoices extends Application {
     public void start(Stage stage) throws Exception {
         _thisStage = stage;
 
+        //загрузка вёрстки окна
         Parent root = FXMLLoader.load(getClass().getResource("view/invoices_table_view.fxml"));
         Scene scene = new Scene(root);
         _thisStage = new Stage();
         _thisStage.setScene(scene);
         _thisStage.setTitle("Накладные");
 
+        //настройка коммуникации между окнами клиентского приложения
         _register = new Register();
         Register.stageInvoices = _thisStage;
 
@@ -72,6 +72,7 @@ public class Invoices extends Application {
         Wagons.stageRegister = _register.GetStage();
         Register.stageWagons = _wagons.GetStage();
 
+        //соответствие элементов вёрстки конкретным экземплярам объектов
         _txtNumberInvoice = (TextField)scene.lookup("#_txtNumberInvoice");
         _txtNameSupplier = (TextField)scene.lookup("#_txtNameSupplier");
         _txtTotalWagons = (TextField)scene.lookup("#_txtTotalWagons");
@@ -92,6 +93,7 @@ public class Invoices extends Application {
         MenuItem reg = new MenuItem("Таблица регистрации");
         MenuItem wag = new MenuItem("Таблица полувагонов");
 
+        //обработка события нажатия на кнопки переходов из одной таблицы в другую
         reg.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -110,47 +112,11 @@ public class Invoices extends Application {
             }
         });
 
-        _thisStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                _readMark = false;
-            }
-        });
-
-        _thisStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                _readMark = true;
-                threadReadData = new Thread(() -> {
-                    while(_readMark){
-                        Platform.runLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                readDataInvoices();
-                            }
-                        });
-
-                        try {
-                            threadReadData.sleep(_timeRead);
-                        } catch (InterruptedException e) {
-                            Platform.runLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
-                                }
-                            });
-                        }
-                    }
-                });
-
-                threadReadData.start();
-            }
-        });
-
         menu.getItems().add(wag);
         menu.getItems().add(reg);
         _menuBar.getMenus().add(0, menu);
 
+        //настройка колонок таблицы
         TableColumn<DataInvoiceTableView, String> attrib1 = new TableColumn<DataInvoiceTableView, String>("Номер накладной");
         attrib1.setCellValueFactory(new PropertyValueFactory<DataInvoiceTableView, String>("numberInvoice"));
         _table.getColumns().add(attrib1);
@@ -171,6 +137,52 @@ public class Invoices extends Application {
         attrib1.setCellValueFactory(new PropertyValueFactory<DataInvoiceTableView, String>("departureTrainDate"));
         _table.getColumns().add(attrib1);
 
+        //обработка события закрытия окна
+        _thisStage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = false;
+            }
+        });
+
+        //обработка события открытия окна
+        _thisStage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = true;
+                //создание потока, который через определённый интервал времени считывает
+                //данных из базы данных на сервере (обновление). Для работы приложения
+                //необходимо постоянное подключение к серверной части приложения, поскольку
+                //только данный модуль имеет доступ к базе данных и предоставляет интерфейс
+                //позволяющий другим модулям обращаться к базе данных и взаимодействовать с
+                //данными
+                threadReadData = new Thread(() -> {
+                    while(_readMark){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                readDataInvoices();
+                            }
+                        });
+
+                        try {
+                            threadReadData.sleep(_timeRead); //ожидание определённый промежуток времени
+                        } catch (InterruptedException e) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+                                }
+                            });
+                        }
+                    }
+                });
+
+                threadReadData.start();
+            }
+        });
+
+        //обработка нажатия на клавишу мыши в таблице (выбор строки)
         _table.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -188,6 +200,7 @@ public class Invoices extends Application {
             }
         });
 
+        //обработка добавления записи в таблицу
         _addInvoice.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -246,6 +259,7 @@ public class Invoices extends Application {
             }
         });
 
+        //обработка обновления записи в таблице
         _updateInvoice.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -310,6 +324,7 @@ public class Invoices extends Application {
             }
         });
 
+        //обработка удаления записи в таблице
         _deleteInvoice.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -351,6 +366,7 @@ public class Invoices extends Application {
         _thisStage.show();
     }
 
+    //чтение всех данных из таблицы Invoices
     private void readDataInvoices(){
         if(_table == null)
             return;
@@ -376,6 +392,7 @@ public class Invoices extends Application {
         }
     }
 
+    //вывод сообщения с определёнными параметрами
     public static void MessageShow(Alert.AlertType type, String title, String message){
         Alert alert = new Alert(type);
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);

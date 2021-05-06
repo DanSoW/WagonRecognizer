@@ -1,13 +1,16 @@
 package client.validator;
 
-import javafx.scene.control.TextField;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
+
+//********************************************************************
+//Класс, реализующий логику проверки данных (валидатор)
+//********************************************************************
 
 public class DataValidator {
+
+    //проверка на присутствие значения в текстовых полях
     public static boolean requiredValidator(String[] listText){
         if((listText == null) || (listText.length == 0))
             return false;
@@ -20,6 +23,7 @@ public class DataValidator {
         return true;
     }
 
+    //проверка на содержание одних только цифр в строке
     public static boolean isAllNumber(String text){
         if((text == null) || (text.length() == 0))
             return false;
@@ -32,6 +36,8 @@ public class DataValidator {
         return true;
     }
 
+    //проверка на причастность строкового значения к
+    //типу данных float, без учёта отрицательных вещественных чисел
     public static boolean isFloatNumber(String text){
         if((text == null) || (text.length() == 0))
             return false;
@@ -52,6 +58,7 @@ public class DataValidator {
         return true;
     }
 
+    //проверка на корректность дат отправки и приезда (дата приезда не может быть раньше даты отправки)
     public static boolean dateTimeValidator(String dateDeparture, String dateArrival){
         if((!dateTextValidator(dateDeparture)) || (!dateTextValidator(dateArrival)))
             return false;
@@ -67,6 +74,7 @@ public class DataValidator {
         return true;
     }
 
+    //синтаксическая проверка формата даты
     public static boolean dateTextValidator(String date){
         if((date == null) || (date.length() == 0))
             return false;

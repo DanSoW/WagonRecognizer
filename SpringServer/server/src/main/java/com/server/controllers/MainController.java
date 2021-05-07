@@ -3,6 +3,7 @@ package com.server.controllers;
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -436,6 +437,38 @@ public class MainController{
 	public List<DataElementRegister> getDataElementRegisterAll() {
 		return dataService.getDataElementRegisterAll();
 	}
+	
+	private class DataElementNumberWagon{
+		private int numberWagon;
+		
+		public DataElementNumberWagon(int numberWagon) {
+			this.numberWagon = numberWagon;
+		}
+
+		@SuppressWarnings("unused")
+		public int getNumberWagon() {
+			return numberWagon;
+		}
+
+		@SuppressWarnings("unused")
+		public void setNumberWagon(int numberWagon) {
+			this.numberWagon = numberWagon;
+		}
+	}
+	
+	//GET запрос для получения информации о всех зарегистрированных номерах полувагонов из таблицы Register
+	@GetMapping(value = "/register/get/all/numbers")
+	public List<DataElementNumberWagon> getDataNumberWagonRegisterAll() {
+		List<DataElementRegister> register = dataService.getDataElementRegisterAll();
+		List<DataElementNumberWagon> numbers = new ArrayList<DataElementNumberWagon>();
+		for(DataElementRegister i : register) {
+			if(!i.isArrivalMark()) {
+				numbers.add(new DataElementNumberWagon(i.getNumberWagon()));
+			}
+		}
+		
+		return numbers;
+	}
 		
 	//POST запрос для добавления информации об одной накладной и полувагоне, зарегистрированного в данной накладной
 	@PostMapping(value = "/register/insert")
@@ -558,6 +591,37 @@ public class MainController{
 				request.getNumberWagon(),
 				request.getSerialNumber(),
 				request.getsD());
+	}
+	
+	private class DataAnswer{
+		private Boolean answer;
+		
+		public DataAnswer(Boolean answer) {
+			super();
+			this.answer = answer;
+		}
+
+		@SuppressWarnings("unused")
+		public Boolean getAnswer() {
+			return answer;
+		}
+
+		@SuppressWarnings("unused")
+		public void setAnswer(Boolean answer) {
+			this.answer = answer;
+		}
+	}
+	
+	@GetMapping(value = "/register/numberwagon/is")
+	public DataAnswer isNumberWagon(@RequestParam Integer numberWagon) {
+		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
+		for(DataElementRegister i : registers) {
+			if(i.getNumberWagon() == numberWagon) {
+				return new DataAnswer(true);
+			}
+		}
+		
+		return new DataAnswer(false);
 	}
 		
 	//POST запрос для удаления конкретной записи в таблице соответствия накладной конкретному полувагону (Register)

@@ -36,10 +36,10 @@
                     </menus>
                 </MenuBar>
                 <VBox prefHeight="13.0" prefWidth="739.0" />
-                <HBox prefHeight="326.0" prefWidth="928.0">
+                <HBox prefHeight="229.0" prefWidth="928.0">
                     <children>
                         <HBox prefHeight="358.0" prefWidth="12.0" />
-                        <TableView id="_tableView" prefHeight="302.0" prefWidth="906.0">
+                        <TableView id="_tableView" prefHeight="331.0" prefWidth="906.0">
                             <columns>
                                 <TableColumn prefWidth="75.0" text="C1" />
                                 <TableColumn prefWidth="75.0" text="C2" />
@@ -58,10 +58,10 @@
                </children>
             </HBox>
             <VBox prefHeight="10.0" prefWidth="928.0" />
-            <HBox prefHeight="330.0" prefWidth="928.0">
+            <HBox prefHeight="435.0" prefWidth="928.0">
                <children>
                   <HBox prefHeight="330.0" prefWidth="12.0" />
-                  <ScrollPane id="_imagePlace" prefHeight="342.0" prefWidth="914.0" />
+                  <ScrollPane id="_imagePlace" prefHeight="314.0" prefWidth="914.0" />
                </children>
             </HBox>
             </children>

@@ -63,7 +63,7 @@ public class DataValidator {
         if((!dateTextValidator(dateDeparture)) || (!dateTextValidator(dateArrival)))
             return false;
 
-        DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
         try {
             if(format.parse(dateArrival).before(format.parse(dateDeparture)))
                 return false;

@@ -1,5 +1,10 @@
 package client;
 
+import client.data.DataElementNumberWagon;
+import client.data.DataElementWagon;
+import client.network.DataNetwork;
+import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -9,8 +14,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -18,9 +25,15 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
-public class Camera{
+import static org.bytedeco.opencv.global.opencv_calib3d.Rodrigues;
+
+public class Camera extends Application {
+
     static {System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
 
     public int isAreaMin(ArrayList<MatOfPoint> contours, double minArea){
@@ -42,69 +55,62 @@ public class Camera{
     }
 
 
-    private TextField _textResult;
-    private Button _btnLoadImage;
-    private Button _btnRecognize;
-    private ScrollPane _scPane;
-    private ImageView _currentImage;
-    private Mat _currentMat;
-    private Recognizer _recognizer;
-    private Stage _thisStage = null;
-    public static Stage mainStage = null;
-    private MenuBar _menuBar = null;
+    private ComboBox<Integer> _cmbNumberWagon = null;
+    private Button _btnSelectedNumber = null;
+    private TextField _textResult = null;
+    private Button _btnLoadImage = null;
+    private Button _btnRecognize = null;
+    private ScrollPane _scPane = null;
+    private ImageView _currentImage = null;
+
+    private String _currentFilePath = null;
+
+    private Mat _currentMat = null;
+    private Recognizer _recognizer = null;
+
+    private volatile boolean _readMark = true;    //метка о старте/завершении считывания данных с сервера
+    private volatile int _timeRead = 10000;       //время через которое будет считаны данные с сервера (обновление данных)
+    private Thread threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
 
     public static void MessageShow(Alert.AlertType type, String title, String message){
         Alert alert = new Alert(type);
+        alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.show();
     }
 
-    public void Show(){
-        if(this._thisStage == null)
-            return;
-        this._thisStage.show();
-    }
-
-    public void Hide(){
-        if(this._thisStage == null)
-            return;
-        this._thisStage.hide();
-    }
-
-    public Stage GetStage(){
-        return this._thisStage;
-    }
-
-    public Camera() throws Exception {
+    @Override
+    public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("view/camera_view.fxml"));
         Scene scene = new Scene(root);
-        _thisStage = new Stage();
-        _thisStage.setScene(scene);
-        _thisStage.setTitle("Камера");
+        stage.setScene(scene);
+        stage.setTitle("Камера");
 
         _textResult = (TextField) scene.lookup("#_txtResult");
         _btnLoadImage = (Button) scene.lookup("#_btnLoadImage");
         _btnRecognize = (Button) scene.lookup("#_btnRecognize");
         _scPane = (ScrollPane) scene.lookup("#_imagePlace");
+        _cmbNumberWagon = (ComboBox) scene.lookup("#_cmbNumberWagon");
+        _btnSelectedNumber = (Button) scene.lookup("#_btnSelectedNumber");
 
-        _menuBar = (MenuBar)scene.lookup("#_menuBar");
-        _menuBar.getMenus().clear();
+        _cmbNumberWagon.getItems().clear();
+        _cmbNumberWagon.getItems().add(2);
+        _cmbNumberWagon.getItems().add(3);
 
-        Menu menu = new Menu("Смена модуля");
-        MenuItem c = new MenuItem("Пользователь");
-
-        c.setOnAction(new EventHandler<ActionEvent>() {
+        _btnSelectedNumber.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
-            public void handle(ActionEvent event) {
-                _thisStage.hide();
-                mainStage.show();
+            public void handle(MouseEvent event) {
+                if(_cmbNumberWagon.getValue() == null){
+                    MessageShow(Alert.AlertType.ERROR, "Ошибка", "Необходимо выбрать номер полувагона!");
+                    return;
+                }
+                _textResult.setText(String.valueOf(_cmbNumberWagon.getValue()));
+
+                insertDataWagon(false);
             }
         });
-
-        menu.getItems().add( c);
-        _menuBar.getMenus().add(0, menu);
 
         ArrayList<String> directories = new ArrayList<>();
         directories.add("C:\\Files\\VALUES\\0");
@@ -119,7 +125,6 @@ public class Camera{
         directories.add("C:\\Files\\VALUES\\9");
         _recognizer = new Recognizer(directories);
 
-        Stage finalStage = _thisStage;
         _btnLoadImage.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -130,8 +135,9 @@ public class Camera{
                 fileChooser.getExtensionFilters().add(extFilter);
 
                 try{
-                    File file = fileChooser.showOpenDialog(finalStage);
+                    File file = fileChooser.showOpenDialog(stage);
                     _currentMat = Imgcodecs.imread(file.getAbsolutePath());
+                    _currentFilePath = file.getAbsolutePath();
                     if(_currentMat.empty()){
                         MessageShow(Alert.AlertType.ERROR, "Ошибка", "Не удалось загрузить изображение!");
                         _currentMat = null;
@@ -144,7 +150,12 @@ public class Camera{
                     _scPane.setPannable(true);
 
                 }catch (Exception e){
-                    MessageShow(Alert.AlertType.ERROR, "Ошибка", "Не удалось обработать изображение");
+                    MessageShow(Alert.AlertType.ERROR, "Ошибка", "Изображение не загружено");
+                    _currentFilePath = null;
+                    _currentImage = null;
+                    _currentMat = null;
+                    _scPane.setContent(null);
+                    _scPane.setPannable(true);
                     return;
                 }
             }
@@ -153,14 +164,56 @@ public class Camera{
         _btnRecognize.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if((_currentMat == null) || (_currentMat.empty())){
-                    MessageShow(Alert.AlertType.ERROR, "Ошибка", "Не удалось обработать изображение");
-                    return;
-                }
-
-                _textResult.setText(_recognizer.recognizeNumber(_currentMat));
+                insertDataWagon(true);
             }
         });
+
+        //обработка события закрытия окна
+        stage.addEventHandler(WindowEvent.WINDOW_CLOSE_REQUEST, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = false;
+            }
+        });
+
+        //обработка события открытия окна
+        stage.addEventHandler(WindowEvent.WINDOW_SHOWING, new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                _readMark = true;
+                //создание потока, который через определённый интервал времени считывает
+                //данных из базы данных на сервере (обновление). Для работы приложения
+                //необходимо постоянное подключение к серверной части приложения, поскольку
+                //только данный модуль имеет доступ к базе данных и предоставляет интерфейс
+                //позволяющий другим модулям обращаться к базе данных и взаимодействовать с
+                //данными
+                threadReadData = new Thread(() -> {
+                    while(_readMark){
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                readWagonNumbers();
+                            }
+                        });
+
+                        try {
+                            threadReadData.sleep(_timeRead); //ожидание определённый промежуток времени
+                        } catch (InterruptedException e) {
+                            Platform.runLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                    MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+                                }
+                            });
+                        }
+                    }
+                });
+
+                threadReadData.start();
+            }
+        });
+
+        stage.show();
 
         /*Scene scene = new Scene(root, 400.0, 150.0);
         stage.setTitle("Recognizer" + Core.VERSION);
@@ -287,13 +340,119 @@ public class Camera{
         hierarchy.release();*/
     }
 
-    /*private void onClickButton(ActionEvent e){
-        Mat img = Imgcodecs.imread("C:\\Files\\data333.jpg");
-        if(img.empty()){
-            System.out.println("Не удалось загрузить изображение!");
+    private void insertDataWagon(boolean recognize){
+        if((_currentImage == null) || (_currentFilePath == null)
+                || (_currentFilePath.length() == 0)){
+            MessageShow(Alert.AlertType.ERROR, "Ошибка", "Необходимо выбрать изображение для распознования!");
             return;
         }
 
-        CvUtils.showImageFX(img, "Текст в заголовке окна");
-    }*/
+        if((_currentMat == null) || (_currentMat.empty())){
+            MessageShow(Alert.AlertType.ERROR, "Ошибка", "Не удалось обработать изображение!");
+            return;
+        }
+
+        if(recognize){
+            _textResult.setText(_recognizer.recognizeNumber(_currentMat));
+        }else{
+            if((_textResult == null) || (_textResult.getText().length() == 0)){
+                MessageShow(Alert.AlertType.ERROR, "Ошибка", "Необходимо определить номер полувагона!");
+                return;
+            }
+        }
+
+        try{
+            Integer value = null;
+            try{
+                value = Integer.valueOf(_textResult.getText());
+            }catch (Exception e){
+                MessageShow(Alert.AlertType.ERROR, "Ошибка", "Номер полувагона распознан не корректно! Полувагона" +
+                        " с данным номером не присутствует в базе данных! Необходимо выбрать номер полувагона из имеющихся" +
+                        " номеров!");
+                return;
+            }
+
+            boolean isRecognize = DataNetwork.isNumberWagon("http://localhost:8080/database/register/numberwagon/is",
+                    value);
+            if((!isRecognize) && (!recognize)){
+                MessageShow(Alert.AlertType.ERROR, "Ошибка", "Полувагона с данным номером не присутствует" +
+                        " в базе данных!");
+                return;
+            }else if((!isRecognize) && (recognize)){
+                MessageShow(Alert.AlertType.ERROR, "Ошибка", "Номер полувагона распознан не корректно! Полувагона" +
+                        " с данным номером не присутствует в базе данных! Необходимо выбрать номер полувагона из имеющихся" +
+                        " номеров!");
+                return;
+            }
+        }catch (Exception e){
+            MessageShow(Alert.AlertType.ERROR, "Ошибка", e.getMessage());
+            return;
+        }
+
+        String filePath = null;
+        try{
+            filePath = DataNetwork.uploadImage("http://localhost:8080/upload", _currentFilePath);
+        }catch (Exception e){
+            MessageShow(Alert.AlertType.ERROR, "Ошибка", e.getMessage());
+            return;
+        }
+
+        Date date = new Date();
+        String strDateFormat = "yyyy-MM-dd";
+        DateFormat dateFormat = new SimpleDateFormat(strDateFormat);
+        String formattedDate = dateFormat.format(date);
+
+        DataElementWagon data = new DataElementWagon(
+                Integer.valueOf(_textResult.getText()),
+                formattedDate,
+                filePath,
+                0.0
+        );
+
+        try {
+            DataNetwork.updateDataElement("http://localhost:8080/database/wagons/insert", data);
+        } catch (Exception e) {
+            MessageShow(Alert.AlertType.ERROR, "Ошибка", e.getMessage());
+            return;
+        }
+    }
+
+    //чтение данных номеров всех не прибывших полувагонов
+    private void readWagonNumbers(){
+        if(_cmbNumberWagon == null)
+            return;
+        int currentNumber = (_cmbNumberWagon.getValue() != null)? _cmbNumberWagon.getValue() : 0;
+        _cmbNumberWagon.getItems().clear();
+        DataElementNumberWagon[] elements = null;
+
+        try {
+            elements = DataNetwork.getListDataElementNumberWagon("http://localhost:8080/database/register/get/all/numbers");
+        } catch (Exception e) {
+            MessageShow(Alert.AlertType.ERROR, "Ошибка!", e.getMessage());
+            _readMark = false;
+            return;
+        }
+
+        for(DataElementNumberWagon i : elements){
+            _cmbNumberWagon.getItems().add(i.numberWagon);
+        }
+
+        if(currentNumber > 0){
+            boolean flag = false;
+            for(Integer i : _cmbNumberWagon.getItems()){
+                if(i.intValue() == currentNumber){
+                    flag = true;
+                    break;
+                }
+            }
+
+            if(flag){
+                _cmbNumberWagon.setValue(currentNumber);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 }

@@ -4,6 +4,7 @@ import client.data.DataElementInvoiceDelete;
 import client.data.DataElementInvoice;
 import client.data.DataInvoiceTableView;
 import client.network.DataNetwork;
+import client.setting.DataSetting;
 import client.validator.DataValidator;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -31,6 +32,7 @@ public class Invoices extends Application {
     //взаимосвязи между окнами
     private Register _register = null;
     private Wagons _wagons = null;
+    private Setting _setting = null;
     private Stage _thisStage = null;
 
 
@@ -49,7 +51,6 @@ public class Invoices extends Application {
     private Button _deleteInvoice = null;
 
     private volatile boolean _readMark = true;    //метка о старте/завершении считывания данных с сервера
-    private volatile int _timeRead = 10000;       //время через которое будет считаны данные с сервера (обновление данных)
     private Thread threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
 
     @Override
@@ -72,6 +73,13 @@ public class Invoices extends Application {
         Wagons.stageRegister = _register.GetStage();
         Register.stageWagons = _wagons.GetStage();
 
+        _setting = new Setting();
+        Setting.stageInvoices = _thisStage;
+        Setting.stageRegister = _register.GetStage();
+        Setting.stageWagons = _wagons.GetStage();
+        Register.stageSetting = _setting.GetStage();
+        Wagons.stageSetting = _setting.GetStage();
+
         //соответствие элементов вёрстки конкретным экземплярам объектов
         _txtNumberInvoice = (TextField)scene.lookup("#_txtNumberInvoice");
         _txtNameSupplier = (TextField)scene.lookup("#_txtNameSupplier");
@@ -92,6 +100,7 @@ public class Invoices extends Application {
         Menu menu = new Menu("Таблица");
         MenuItem reg = new MenuItem("Таблица регистрации");
         MenuItem wag = new MenuItem("Таблица полувагонов");
+        MenuItem sett = new MenuItem("Настройки");
 
         //обработка события нажатия на кнопки переходов из одной таблицы в другую
         reg.setOnAction(new EventHandler<ActionEvent>() {
@@ -112,8 +121,18 @@ public class Invoices extends Application {
             }
         });
 
+        sett.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                _thisStage.hide();
+                _setting.Show();
+                _readMark = false;
+            }
+        });
+
         menu.getItems().add(wag);
         menu.getItems().add(reg);
+        menu.getItems().add(sett);
         _menuBar.getMenus().add(0, menu);
 
         //настройка колонок таблицы
@@ -166,7 +185,7 @@ public class Invoices extends Application {
                         });
 
                         try {
-                            threadReadData.sleep(_timeRead); //ожидание определённый промежуток времени
+                            threadReadData.sleep(DataSetting.timeRead); //ожидание определённый промежуток времени
                         } catch (InterruptedException e) {
                             Platform.runLater(new Runnable() {
                                 @Override

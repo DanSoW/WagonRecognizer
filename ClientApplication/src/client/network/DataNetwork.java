@@ -2,6 +2,7 @@ package client.network;
 
 import client.data.DataElementInvoice;
 import client.data.DataElementRegister;
+import client.data.DataElementSetting;
 import client.data.DataElementWagon;
 import com.google.gson.Gson;
 

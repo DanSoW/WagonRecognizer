@@ -8,6 +8,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -15,13 +16,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
@@ -36,7 +37,93 @@ public class Camera extends Application {
 
     static {System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
 
-    public int isAreaMin(ArrayList<MatOfPoint> contours, double minArea){
+    public static void main(String[] args) {
+        Application.launch(args);
+    }
+    public void start(Stage stage) throws Exception {
+        VBox root = new VBox(15.0);
+        root.setAlignment(Pos.CENTER);
+        Button button = new Button("Выполнить");
+        button.setOnAction(this::onClickButton);
+        root.getChildren().add(button);
+        Scene scene = new Scene(root, 400.0, 150.0);
+        stage.setTitle("OpenCV " + Core.VERSION);
+        stage.setScene(scene);
+        stage.setOnCloseRequest(event -> {
+            Platform.exit();
+        });
+        stage.show();
+
+        Mat img = Imgcodecs.imread("C:\\Files\\image.png");
+        if (img.empty()) {
+            System.out.println("Не удалось загрузить изображение");
+            return;
+        }
+
+        Mat imgGray = new Mat();
+        Imgproc.cvtColor(img, imgGray, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.threshold(imgGray, imgGray, 100, 255, Imgproc.THRESH_BINARY | Imgproc.THRESH_OTSU);
+        Mat edges = new Mat();
+        Imgproc.Canny(imgGray, edges, 80, 200);
+        CvUtils.showImageFX(edges, "Canny");
+        Mat edgesCopy = edges.clone(); // Создаем копию
+        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
+        Mat hierarchy = new Mat();
+
+        Imgproc.findContours(edgesCopy, contours, hierarchy,
+                Imgproc.RETR_TREE,
+                Imgproc.CHAIN_APPROX_NONE);
+
+        /*boolean flag = true;
+        while(flag){
+            flag = false;
+            int index = (-1);
+            for(int i = 0; i < contours.size(); i++){
+                if(Imgproc.contourArea(contours.get(i)) == 0){
+                    flag = true;
+                    index = i;
+                    break;
+                }
+            }
+
+            if(index >= 0)
+                contours.remove(index);
+        }*/
+
+        System.out.println(contours.size());
+        System.out.println(hierarchy.size());
+        System.out.println(hierarchy.dump());
+
+        Imgproc.drawContours(img, contours, -1, CvUtils.COLOR_BLUE);
+        CvUtils.showImageFX(img, "drawContours");
+
+       for(int i = 0; i < contours.size(); i++){
+            double len1 = Imgproc.arcLength(
+                    new MatOfPoint2f(contours.get(i).toArray()), false);
+            double len2 = Imgproc.arcLength(
+                    new MatOfPoint2f(contours.get(i).toArray()), true
+            );
+
+            System.out.println(Imgproc.contourArea(contours.get(i)) + " = " + Imgproc.isContourConvex(
+                    contours.get(i)
+            ));
+        }
+
+        img.release(); imgGray.release();
+        edges.release(); edgesCopy.release();
+        hierarchy.release();
+        //CvUtils.showImageFX
+    }
+    private void onClickButton(ActionEvent e) {
+        Mat img = Imgcodecs.imread("C:\\Files\\image.png");
+        if (img.empty()) {
+            System.out.println("Не удалось загрузить изображение");
+            return;
+        }
+        CvUtils.showImageFX(img, "Текст в заголовке окна");
+    }
+
+    /*public int isAreaMin(ArrayList<MatOfPoint> contours, double minArea){
         for(int i = 0; i < contours.size(); i++){
             if(Imgproc.contourArea(contours.get(i)) < minArea)
                 return i;
@@ -220,9 +307,9 @@ public class Camera extends Application {
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> {
             Platform.exit();
-        });*/
+        });
 
-        /*Mat img22 = Imgcodecs.imread("C:\\Files\\VALUES\\7\\70_0.jpg");
+        Mat img22 = Imgcodecs.imread("C:\\Files\\VALUES\\7\\70_0.jpg");
         if(img22.empty()){
             System.out.println("Не удалось загрузить изображение!");
             return;
@@ -337,7 +424,7 @@ public class Camera extends Application {
 
         img.release(); imgGray.release();
         edges.release(); edgesCopy.release();
-        hierarchy.release();*/
+        hierarchy.release();
     }
 
     private void insertDataWagon(boolean recognize){
@@ -454,5 +541,5 @@ public class Camera extends Application {
 
     public static void main(String[] args) {
         launch(args);
-    }
+    }*/
 }

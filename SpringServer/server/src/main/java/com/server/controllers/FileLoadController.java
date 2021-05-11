@@ -27,7 +27,7 @@ import com.server.database.elements.DataElementImageFilePath;
 public class FileLoadController {
 	
 	//Название директории, хранящейся на сервере, где будут сохранены изображения загруженные с клиентской части приложения
-	private static final String nameDirectory = "Images"; 
+	public static final String nameDirectory = "Images"; 
 
 	
 	//Загрузка изображений с клиентской части приложения на сервер

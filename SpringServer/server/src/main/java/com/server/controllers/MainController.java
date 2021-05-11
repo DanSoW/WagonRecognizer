@@ -27,6 +27,7 @@ import com.server.database.requests.DataElementRequestDeleteWagons;
 import com.server.database.requests.DataElementRequestInsertInvoices;
 import com.server.database.requests.DataElementRequestInsertRegister;
 import com.server.database.requests.DataElementRequestInsertWagons;
+import com.server.database.requests.DataElementRequestSetting;
 import com.server.database.services.DataElementService;
 import com.sun.el.parser.ParseException;
 import com.sun.istack.NotNull;
@@ -54,64 +55,33 @@ public class MainController{
 	private static short SIZE_MAX_NUMBER_INVOICE = 20;	//максимальное число цифр в номере накладной
 	private static short SIZE_MIN_NUMBER_INVOICE = 2;	//минимальное число цифр в номере накладной
 	
-	
-	//Объект, для передачи данных о количестве цифр в номере накладной с клиентской части приложения на сервер
-	private class SizeMinNumberInvoice{
-		@NotNull
-		private Short size;
-
-		public Short getSize() {
-			return size;
-		}
-
-		@SuppressWarnings("unused")
-		public void setSize(Short size) {
-			this.size = size;
-		}
-		
-	}
-	
-	//Объект, для передачи данных о количестве цифр в номере полувагона с клиентской части приложения на сервер
-	private class SizeNumberWagon{
-		@NotNull
-		private Short size;
-
-		public Short getSize() {
-			return size;
-		}
-
-		@SuppressWarnings("unused")
-		public void setSize(Short size) {
-			this.size = size;
-		}
-	}
-	
 	//*******************************************
 	//Реализация POST/GET запросов для настройки параметров серверной части приложения
 	
 	@PostMapping(value = "/settings/sizenumberwagon")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateMaxSizeNumberWagon(@Valid @RequestBody SizeNumberWagon request) throws Exception {
+	public void updateMaxSizeNumberWagon(@Valid @RequestBody DataElementRequestSetting request) throws Exception {
 		if(request.getSize() <= 0)
 			throw new Exception("Число цифр в номере полувагона не может быть меньше нуля или равно нулю!");
-		else if(request.getSize() >= 10)
+		else if(request.getSize() > 10)
 			throw new Exception("Число цифр в номере полувагона не может быть больше 10!");
 		SIZE_NUMBER_WAGON = request.getSize();
 	}
 	
 	@PostMapping(value = "/settings/minsizenumberinvoice")
 	@ResponseStatus(HttpStatus.ACCEPTED)
-	public void updateMaxSizeNumberWagon(@Valid @RequestBody SizeMinNumberInvoice request) throws Exception {
+	public void updateMaxSizeNumberInvoice(@Valid @RequestBody DataElementRequestSetting request) throws Exception {
 		if(request.getSize() < 2)
 			throw new Exception("Минимальное число символов в номере накладной не должно быть меньше 2!");
-		else if(request.getSize() > 10)
-			throw new Exception("Максимальное число символов в номере накладной не должно быть больше 2!");
+		else if(request.getSize() > 20)
+			throw new Exception("Минимальное число символов в номере накладной не должно быть больше 20!");
 		SIZE_MIN_NUMBER_INVOICE = request.getSize();
 	}
 	
 	//*******************************************
 	//GET запрос для получения информации об одном конкретном полувагоне
 	@GetMapping(value = "/wagons/get/")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DataElementWagons getDataElementWagons(@RequestParam("numberWagon") int numberWagon) throws Exception{
 		String number = String.valueOf(numberWagon);
 		if(number.length() != SIZE_NUMBER_WAGON)
@@ -121,6 +91,7 @@ public class MainController{
 	
 	//GET запрос для получения информации о всех полувагонах, содержащихся в таблице Wagons
 	@GetMapping(value = "/wagons/get/all")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public List<DataElementWagons> getDataElementWagonsAll() {
 		return dataService.getDataElementWagonsAll();
 	}
@@ -129,8 +100,12 @@ public class MainController{
 	@PostMapping(value = "/wagons/insert")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void insertDataElementWagons(@Valid @RequestBody DataElementRequestInsertWagons request) throws Exception {
-		if(!(new File(request.getImagePath()).exists()))
-			throw new Exception("Изображение с данным именем не найдено в локальном хранилище сервера!");
+		if(!((new File(request.getImagePath())).exists())) {
+			String[] strs = request.getImagePath().split("\\\\");
+			File f = new File(FileLoadController.nameDirectory + "\\" + strs[strs.length-1]);
+			if(!f.exists())
+				throw new Exception("Изображение с данным именем не найдено в локальном хранилище сервера!");
+		}
 		
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
@@ -194,8 +169,13 @@ public class MainController{
 	@PostMapping(value = "/wagons/update")
 	@ResponseStatus(HttpStatus.ACCEPTED)
 	public void updateDataElementWagons(@Valid @RequestBody DataElementRequestInsertWagons request) throws Exception {
-		if(!(new File(request.getImagePath())).exists())
-			throw new Exception("Изображение с данным именем не найдено в локальном хранилище сервера!");
+		if(!((new File(request.getImagePath())).exists())) {
+			String[] strs = request.getImagePath().split("\\\\");
+			File f = new File(FileLoadController.nameDirectory + "\\" + strs[strs.length-1]);
+			if(!f.exists())
+				throw new Exception("Изображение с данным именем не найдено в локальном хранилище сервера!");
+		}
+		
 		String number = String.valueOf(request.getNumberWagon());
 		if(number.length() != SIZE_NUMBER_WAGON)
 			throw new Exception("Номер полувагона должен состоять из " + String.valueOf(SIZE_NUMBER_WAGON) + " цифр!");
@@ -290,6 +270,7 @@ public class MainController{
 	
 	//GET запрос для получения информации об одной конкретной записи из таблицы Invoices
 	@GetMapping(value = "/invoices/get/")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DataElementInvoices getDataElementInvoices(@RequestParam String numberInvoice) throws Exception {
 		if((numberInvoice.length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (numberInvoice.length() > SIZE_MAX_NUMBER_INVOICE)) {
@@ -301,6 +282,7 @@ public class MainController{
 	
 	//GET запрос для получения информации о всех накладных, содержащихся в таблице Invoices
 	@GetMapping(value = "/invoices/get/all")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public List<DataElementInvoices> getDataElementInvoicesAll() {
 		return dataService.getDataElementInvoicesAll();
 	}
@@ -420,6 +402,7 @@ public class MainController{
 	//**************************************************
 	//GET запрос для получения информации об одной конкретной записи из таблицы Register
 	@GetMapping(value = "/register/get/")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DataElementRegister getDataElementRegister(@RequestParam String fkNumberInvoice, @RequestParam int numberWagon) throws Exception {
 		if((fkNumberInvoice.length() < SIZE_MIN_NUMBER_INVOICE)
 				|| (fkNumberInvoice.length() > SIZE_MAX_NUMBER_INVOICE)) {
@@ -434,6 +417,7 @@ public class MainController{
 		
 	//GET запрос для получения информации о всех записях из таблицы Register
 	@GetMapping(value = "/register/get/all")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public List<DataElementRegister> getDataElementRegisterAll() {
 		return dataService.getDataElementRegisterAll();
 	}
@@ -458,6 +442,7 @@ public class MainController{
 	
 	//GET запрос для получения информации о всех зарегистрированных номерах полувагонов из таблицы Register
 	@GetMapping(value = "/register/get/all/numbers")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public List<DataElementNumberWagon> getDataNumberWagonRegisterAll() {
 		List<DataElementRegister> register = dataService.getDataElementRegisterAll();
 		List<DataElementNumberWagon> numbers = new ArrayList<DataElementNumberWagon>();
@@ -613,6 +598,7 @@ public class MainController{
 	}
 	
 	@GetMapping(value = "/register/numberwagon/is")
+	@ResponseStatus(HttpStatus.ACCEPTED)
 	public DataAnswer isNumberWagon(@RequestParam Integer numberWagon) {
 		List<DataElementRegister> registers = dataService.getDataElementRegisterAll();
 		for(DataElementRegister i : registers) {

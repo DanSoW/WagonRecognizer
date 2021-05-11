@@ -2,6 +2,7 @@ package client;
 
 import client.data.*;
 import client.network.DataNetwork;
+import client.setting.DataSetting;
 import client.validator.DataValidator;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -42,9 +43,9 @@ public class Register {
     private Stage _thisStage = null;            //ссылка на собственный stage
     public static Stage stageInvoices = null;   //stage окна таблицы накладных
     public static Stage stageWagons = null;     //stage окна таблицы полувагонов
+    public static Stage stageSetting = null;    //stage окна настройки приложения
 
     private volatile boolean _readMark = true;
-    private volatile int _timeRead = 10000;
     private Thread threadReadData = null;
 
     public void Show(){
@@ -88,6 +89,7 @@ public class Register {
         Menu menu = new Menu("Таблица");
         MenuItem inv = new MenuItem("Таблица накладных");
         MenuItem wag = new MenuItem("Таблица полувагонов");
+        MenuItem sett = new MenuItem("Настройки");
 
         inv.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -107,8 +109,18 @@ public class Register {
             }
         });
 
+        sett.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                _thisStage.hide();
+                stageSetting.show();
+                _readMark = false;
+            }
+        });
+
         menu.getItems().add(inv);
         menu.getItems().add(wag);
+        menu.getItems().add(sett);
         _menuBar.getMenus().add(0, menu);
 
         TableColumn<DataRegisterTableView, String> attrib1 = new TableColumn<DataRegisterTableView, String>("Номер накладной");
@@ -156,7 +168,7 @@ public class Register {
                         });
 
                         try {
-                            threadReadData.sleep(_timeRead);
+                            threadReadData.sleep(DataSetting.timeRead);
                         } catch (Exception e) {
                             Platform.runLater(new Runnable() {
                                 @Override
@@ -208,6 +220,10 @@ public class Register {
                     return;
                 }else if(!DataValidator.isFloatNumber(_txtSd.getText())){
                     Invoices.MessageShow(Alert.AlertType.ERROR, "Ошибка!", "Процент сыпучести вещества должен быть вещественным числом и больше либо равен 0");
+                    return;
+                }else if(_txtNumberWagon.getText().length() != DataSetting.sizeNumberWagon){
+                    Invoices.MessageShow(Alert.AlertType.ERROR, "Ошибка!", "Длина последовательности цифр номера полувагона должна быть равна " +
+                            DataSetting.sizeNumberWagon);
                     return;
                 }
 
@@ -267,6 +283,10 @@ public class Register {
                     return;
                 }else if(!DataValidator.isFloatNumber(_txtSd.getText())){
                     Invoices.MessageShow(Alert.AlertType.ERROR, "Ошибка!", "Процент сыпучести вещества должен быть вещественным числом и больше либо равен 0");
+                    return;
+                }else if(_txtNumberWagon.getText().length() != DataSetting.sizeNumberWagon){
+                    Invoices.MessageShow(Alert.AlertType.ERROR, "Ошибка!", "Длина последовательности цифр номера полувагона должна быть равна " +
+                            DataSetting.sizeNumberWagon);
                     return;
                 }
 

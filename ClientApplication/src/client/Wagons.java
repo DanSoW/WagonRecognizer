@@ -5,6 +5,7 @@ import client.data.DataElementWagon;
 import client.data.DataRegisterTableView;
 import client.data.DataWagonTableView;
 import client.network.DataNetwork;
+import client.setting.DataSetting;
 import com.sun.javafx.tk.ImageLoader;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -40,7 +41,8 @@ public class Wagons {
     //взаимосвязи между окнами
     private Stage _thisStage = null;            //ссылка на собственный stage
     public static Stage stageInvoices = null;   //stage окна таблицы накладных
-    public static Stage stageRegister= null;    //stage окна таблицы регистрации
+    public static Stage stageRegister = null;   //stage окна таблицы регистрации
+    public static Stage stageSetting  = null;   //stage окна настройки
 
     public Button _loadImage = null;
     public ScrollPane _imagePlace = null;
@@ -50,7 +52,6 @@ public class Wagons {
     private int _currentRow = (-1);             //текущая строка в таблице, которую пользователь выбрал
 
     private volatile boolean _readMark = true;
-    private volatile int _timeRead = 10000;
     private Thread threadReadData = null;
 
     public void Show(){
@@ -90,6 +91,7 @@ public class Wagons {
         Menu menu = new Menu("Таблица");
         MenuItem inv = new MenuItem("Таблица накладных");
         MenuItem reg = new MenuItem("Таблица регистрации");
+        MenuItem sett = new MenuItem("Настройки");
 
         inv.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -109,8 +111,18 @@ public class Wagons {
             }
         });
 
+        sett.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                _thisStage.hide();
+                stageSetting.show();
+                _readMark = false;
+            }
+        });
+
         menu.getItems().add(inv);
         menu.getItems().add(reg);
+        menu.getItems().add(sett);
         _menuBar.getMenus().add(0, menu);
 
         TableColumn<DataWagonTableView, Integer> attrib1 = new TableColumn<DataWagonTableView, Integer>("Номер полувагона");
@@ -150,7 +162,7 @@ public class Wagons {
                         });
 
                         try {
-                            threadReadData.sleep(_timeRead);
+                            threadReadData.sleep(DataSetting.timeRead);
                         } catch (Exception e) {
                             Platform.runLater(new Runnable() {
                                 @Override

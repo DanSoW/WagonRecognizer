@@ -51,7 +51,7 @@ public class Invoices extends Application {
     private Button _deleteInvoice = null;
 
     private volatile boolean _readMark = true;    //метка о старте/завершении считывания данных с сервера
-    private Thread threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
+    private Thread _threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -175,7 +175,7 @@ public class Invoices extends Application {
                 //только данный модуль имеет доступ к базе данных и предоставляет интерфейс
                 //позволяющий другим модулям обращаться к базе данных и взаимодействовать с
                 //данными
-                threadReadData = new Thread(() -> {
+                _threadReadData = new Thread(() -> {
                     while(_readMark){
                         Platform.runLater(new Runnable() {
                             @Override
@@ -185,7 +185,7 @@ public class Invoices extends Application {
                         });
 
                         try {
-                            threadReadData.sleep(DataSetting.timeRead); //ожидание определённый промежуток времени
+                            _threadReadData.sleep(DataSetting.timeRead); //ожидание определённый промежуток времени
                         } catch (InterruptedException e) {
                             Platform.runLater(new Runnable() {
                                 @Override
@@ -197,7 +197,7 @@ public class Invoices extends Application {
                     }
                 });
 
-                threadReadData.start();
+                _threadReadData.start();
             }
         });
 

@@ -1,12 +1,9 @@
 package client;
 
-import client.data.DataElementRegister;
 import client.data.DataElementWagon;
-import client.data.DataRegisterTableView;
 import client.data.DataWagonTableView;
 import client.network.DataNetwork;
 import client.setting.DataSetting;
-import com.sun.javafx.tk.ImageLoader;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,9 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -44,15 +39,15 @@ public class Wagons {
     public static Stage stageRegister = null;   //stage окна таблицы регистрации
     public static Stage stageSetting  = null;   //stage окна настройки
 
-    public Button _loadImage = null;
-    public ScrollPane _imagePlace = null;
-    public CheckBox _deleteImage = null;
-    public ImageView _currentImage = null;
+    private Button _loadImage = null;
+    private ScrollPane _imagePlace = null;
+    private CheckBox _deleteImage = null;
+    private ImageView _currentImage = null;
 
     private int _currentRow = (-1);             //текущая строка в таблице, которую пользователь выбрал
 
     private volatile boolean _readMark = true;
-    private Thread threadReadData = null;
+    private Thread _threadReadData = null;
 
     public void Show(){
         if(this._thisStage == null)
@@ -152,7 +147,7 @@ public class Wagons {
             @Override
             public void handle(WindowEvent event) {
                 _readMark = true;
-                threadReadData = new Thread(() -> {
+                _threadReadData = new Thread(() -> {
                     while(_readMark){
                         Platform.runLater(new Runnable() {
                             @Override
@@ -162,7 +157,7 @@ public class Wagons {
                         });
 
                         try {
-                            threadReadData.sleep(DataSetting.timeRead);
+                            _threadReadData.sleep(DataSetting.timeRead);
                         } catch (Exception e) {
                             Platform.runLater(new Runnable() {
                                 @Override
@@ -174,7 +169,7 @@ public class Wagons {
                     }
                 });
 
-                threadReadData.start();
+                _threadReadData.start();
             }
         });
 

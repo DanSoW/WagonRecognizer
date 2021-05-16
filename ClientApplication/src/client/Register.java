@@ -46,7 +46,7 @@ public class Register {
     public static Stage stageSetting = null;    //stage окна настройки приложения
 
     private volatile boolean _readMark = true;
-    private Thread threadReadData = null;
+    private Thread _threadReadData = null;
 
     public void Show(){
         if(this._thisStage == null)
@@ -158,7 +158,7 @@ public class Register {
             @Override
             public void handle(WindowEvent event) {
                 _readMark = true;
-                threadReadData = new Thread(() -> {
+                _threadReadData = new Thread(() -> {
                     while(_readMark){
                         Platform.runLater(new Runnable() {
                             @Override
@@ -168,7 +168,7 @@ public class Register {
                         });
 
                         try {
-                            threadReadData.sleep(DataSetting.timeRead);
+                            _threadReadData.sleep(DataSetting.timeRead);
                         } catch (Exception e) {
                             Platform.runLater(new Runnable() {
                                 @Override
@@ -181,7 +181,7 @@ public class Register {
                     }
                 });
 
-                threadReadData.start();
+                _threadReadData.start();
             }
         });
 

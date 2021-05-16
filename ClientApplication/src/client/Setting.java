@@ -63,7 +63,7 @@ public class Setting {
         Scene scene = new Scene(root);
         _thisStage = new Stage();
         _thisStage.setScene(scene);
-        _thisStage.setTitle("Регистрация");
+        _thisStage.setTitle("Настройки");
 
         _txtSizeNumberWagon = (TextField)scene.lookup("#_txtSizeNumberWagon");
         _txtMinSizeNumberInvoice = (TextField)scene.lookup("#_txtMinSizeNumberInvoice");

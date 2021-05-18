@@ -15,6 +15,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+//*******************************************************************
+//Класс, осуществляющий взаимодействие с серверной частью приложения
+//*******************************************************************
+
 public class DataNetwork {
     //класс для обработки ошибок
     private class ErrorMessage{

@@ -17,6 +17,11 @@ import java.awt.image.DataBufferByte;
 import java.io.*;
 import java.util.Arrays;
 
+//*************************************************************
+//Класс, предоставляющий функционал преобразования изображений
+//из одного типа в другой в разных представлениях
+//*************************************************************
+
 public class CvUtils {
 
     public static final Scalar COLOR_BLACK = colorRGB(0, 0, 0);
@@ -104,7 +109,7 @@ public class CvUtils {
         return image;
     }
 
-    //преобразование BufferedImaage в Mat
+    //преобразование BufferedImage в Mat
     public static Mat BufferedImageToMat(BufferedImage img){
         if(img == null)
             return new Mat();
@@ -186,6 +191,7 @@ public class CvUtils {
         return wim;
     }
 
+    //конвертация ImageFX в Mat
     public static Mat ImageFXToMat(javafx.scene.image.Image img){
         if(img == null)
             return new Mat();
@@ -288,6 +294,7 @@ public class CvUtils {
         }
     }
 
+    //вывод изображения при использовании Swing
     public static void showImageSwing(Mat img, String title) {
         BufferedImage im = MatToBufferedImage(img);
         if (im == null) return;
@@ -306,6 +313,7 @@ public class CvUtils {
         window.setVisible(true);
     }
 
+    //вывод изображения при использовании JavaFX
     public static void showImageFX(Mat img, String title) {
         Image im = MatToImageFX(img);
         Stage window = new Stage();

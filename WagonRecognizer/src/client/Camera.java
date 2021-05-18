@@ -20,6 +20,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import net.sourceforge.tess4j.ITessAPI;
+import net.sourceforge.tess4j.Tesseract;
 import org.opencv.core.*;
 import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -35,161 +37,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-import static org.bytedeco.opencv.global.opencv_calib3d.Rodrigues;
+//**********************************************************************
+//Программируемость главного окна, в котором определён пользовательский
+//интерфейс для загрузки изображений и начала их распознования
+//**********************************************************************
 
 public class Camera extends Application {
-    /*static {System.loadLibrary(Core.NATIVE_LIBRARY_NAME);}
-
-    public static void main(String[] args) {
-        Application.launch(args);
-    }
-    public void start(Stage stage) throws Exception {
-        VBox root = new VBox(15.0);
-        root.setAlignment(Pos.CENTER);
-        Button button = new Button("Выполнить");
-        button.setOnAction(this::onClickButton);
-        root.getChildren().add(button);
-        Scene scene = new Scene(root, 400.0, 150.0);
-        stage.setTitle("OpenCV " + Core.VERSION);
-        stage.setScene(scene);
-        stage.setOnCloseRequest(event -> {
-            Platform.exit();
-        });
-        stage.show();
-
-        Mat img = Imgcodecs.imread("C:\\Files\\Bad\\image2721324.bmp");
-        if (img.empty()) {
-            System.out.println("Не удалось загрузить изображение");
-            return;
-        }
-
-        Mat imgEq = Imgcodecs.imread("C:\\Files\\VALUES\\3\\30_0.jpg");
-        int id = 0;
-
-        Mat imgGray2= new Mat();
-        Imgproc.cvtColor(imgEq, imgGray2, Imgproc.COLOR_BGR2GRAY);
-        Mat edges2 = new Mat();
-        Imgproc.Canny(imgGray2, edges2, 80, 200);
-        Mat edgesCopy2 = edges2.clone(); // Создаем копию
-        ArrayList<MatOfPoint> contours2 = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(edgesCopy2, contours2, new Mat(),
-                Imgproc.RETR_EXTERNAL,
-                Imgproc.CHAIN_APPROX_NONE);
-
-        ArrayList<MatOfPoint> contours3 = new ArrayList<>();
-        contours3.add(contours2.get(id));
-        Imgproc.drawContours(imgEq, contours3, -1, CvUtils.COLOR_BLUE);
-        CvUtils.showImageFX(imgEq, "Оригинал (с чем сравниваем)");
-
-        ArrayList<String> directories = new ArrayList<>();
-        directories.add("C:\\Files\\VALUES\\0");
-        directories.add("C:\\Files\\VALUES\\1");
-        directories.add("C:\\Files\\VALUES\\2");
-        directories.add("C:\\Files\\VALUES\\3");
-        directories.add("C:\\Files\\VALUES\\4");
-        directories.add("C:\\Files\\VALUES\\5");
-        directories.add("C:\\Files\\VALUES\\6");
-        directories.add("C:\\Files\\VALUES\\7");
-        directories.add("C:\\Files\\VALUES\\8");
-        directories.add("C:\\Files\\VALUES\\9");
-        Recognizer _recognizer = new Recognizer(directories);
-        System.out.println(_recognizer.recognizeNumber(img));
-
-
-        CvUtils.showImageFX(img, "Оригинал");
-        Mat imgGray = new Mat();
-        Imgproc.cvtColor(img, imgGray, Imgproc.COLOR_BGR2GRAY);
-        Mat edges = new Mat();
-        Imgproc.Canny(imgGray, edges, 80, 200);
-        Mat edgesCopy = edges.clone(); // Создаем копию
-        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>();
-        Imgproc.findContours(edgesCopy, contours, new Mat(),
-                Imgproc.RETR_EXTERNAL,
-                Imgproc.CHAIN_APPROX_NONE);
-
-        int idx = 0;
-        while((idx = isAreaMin(contours, 40)) >= 0){
-            contours.remove(idx);
-        }
-
-        MatOfPoint shape = contours2.get(id);
-
-        double min = Double.MAX_VALUE, current_value = 0;
-        int index = -1;
-        for (int i = 0, j = contours.size(); i < j; i++) {
-            current_value = Imgproc.matchShapes(contours.get(i), shape,
-                    Imgproc.CV_CONTOURS_MATCH_I3, 0);
-
-            if (current_value < min) {
-                min = current_value;
-                index = i;
-            }
-            System.out.println("CV_CONTOURS_MATCH_I1: " + i + " " +
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I1, 0));
-            System.out.println("CV_CONTOURS_MATCH_I2: " + i + " " +
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I2, 0));
-            System.out.println("CV_CONTOURS_MATCH_I3: " + i + " " +
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I3, 0));
-        }
-
-        if(min >= 0.8){
-            System.out.println("Ничего не найдено!");
-            img.release(); imgGray.release();
-            edges.release(); edgesCopy.release(); shape.release();
-            return;
-        }
-        Rect r = Imgproc.boundingRect(contours.get(index));
-        Imgproc.rectangle(img, new Point(r.x, r.y),
-                new Point(r.x + r.width - 1, r.y + r.height - 1),
-                CvUtils.COLOR_RED);
-        System.out.println("Лучшее совпадение: индекс " + index +
-                " значение " + min);
-        CvUtils.showImageFX(img, "Результат сравнения");
-        img.release(); imgGray.release();
-        edges.release(); edgesCopy.release(); shape.release();
-
-        //CvUtils.showImageFX
-    }
-    private void onClickButton(ActionEvent e) {
-        Mat img = Imgcodecs.imread("C:\\Files\\image.png");
-        if (img.empty()) {
-            System.out.println("Не удалось загрузить изображение");
-            return;
-        }
-        CvUtils.showImageFX(img, "Текст в заголовке окна");
-    }
-
-    public int isAreaMin(ArrayList<MatOfPoint> contours, double minArea){
-        for(int i = 0; i < contours.size(); i++){
-            if(Imgproc.contourArea(contours.get(i)) < minArea)
-                return i;
-        }
-
-        return (-1);
-    }
-
-    public int isAreaMax(ArrayList<MatOfPoint> contours, double maxArea){
-        for(int i = 0; i < contours.size(); i++){
-            if(Imgproc.contourArea(contours.get(i)) > maxArea)
-                return i;
-        }
-
-        return (-1);
-    }*/
-
-
     private ComboBox<Integer> _cmbNumberWagon = null;
     private Button _btnSelectedNumber = null;
     private TextField _textResult = null;
+    private TextField _textLevelCorrect = null;
     private Button _btnLoadImage = null;
-    private Button _btnLoadVideo = null;
-    private Button _btnRealTIme = null;
     private Button _btnRecognize = null;
-    private TextField _btnIdCamera = null;
     private ScrollPane _scPane = null;
+    private ScrollPane _scPaneImageNumberWagon = null;
     private ImageView _currentImage = null;
 
     private String _currentFilePath = null;
@@ -223,11 +84,10 @@ public class Camera extends Application {
         _scPane = (ScrollPane) scene.lookup("#_imagePlace");
         _cmbNumberWagon = (ComboBox) scene.lookup("#_cmbNumberWagon");
         _btnSelectedNumber = (Button) scene.lookup("#_btnSelectedNumber");
-        _btnIdCamera = (TextField) scene.lookup("#_btnIdCamera");
+        _scPaneImageNumberWagon = (ScrollPane) scene.lookup("#_scPaneImageNumberWagon");
+        _textLevelCorrect = (TextField) scene.lookup("#_txtLevelCorrect");
 
         _cmbNumberWagon.getItems().clear();
-        _cmbNumberWagon.getItems().add(2);
-        _cmbNumberWagon.getItems().add(3);
 
         _btnSelectedNumber.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
             @Override
@@ -275,41 +135,6 @@ public class Camera extends Application {
                         return;
                     }
 
-                    CascadeClassifier face_detector = new CascadeClassifier();
-                    if (!face_detector.load("C:\\Projects\\WagonRecognizer\\cascade\\haarcascade_russian_plate_number.xml")) {
-                        System.out.println("Не удалось загрузить классификатор ");
-                        return;
-                    }
-                    MatOfRect faces = new MatOfRect();
-                    face_detector.detectMultiScale(_currentMat, faces);
-                    double maxRectArea = 0;
-                    for (Rect r : faces.toList()) {
-                        Mat imgData = _currentMat.submat(new Rect(r.x, r.y, r.width, r.height));
-                        if(!_recognizer.isCorrectRect(imgData, 0.8, 4, Imgproc.CV_CONTOURS_MATCH_I3))
-                            continue;
-                        if(maxRectArea < (new Rect(r.x, r.y, r.width, r.height)).area()){
-                            maxRectArea = (new Rect(r.x, r.y, r.width, r.height)).area();
-                        }
-                    }
-
-                    for(Rect r : faces.toList()){
-                        Mat imgData = _currentMat.submat(new Rect(r.x, r.y, r.width, r.height));
-                        if((new Rect(r.x, r.y, r.width, r.height)).area() != maxRectArea)
-                            continue;
-
-                        Imgproc.rectangle(_currentMat, new Point(r.x, r.y),
-                                new Point(r.x + r.width, r.y + r.height),
-                                CvUtils.COLOR_RED, 2);
-                    }
-
-                    /*Rect rect = _recognizer.getDetectImageRect(_currentMat);
-                    Imgproc.rectangle(_currentMat, new Point(rect.x, rect.y),
-                            new Point(rect.x + rect.width, rect.y + rect.height), CvUtils.COLOR_RED, 2);
-                    Image img = CvUtils.MatToImageFX(_currentMat);
-                    _currentImage = new ImageView(img);
-                    _scPane.setContent(_currentImage);
-                    _scPane.setPannable(true);*/
-
                     Image img = CvUtils.MatToImageFX(_currentMat);
                     _currentImage = new ImageView(img);
                     _scPane.setContent(_currentImage);
@@ -322,7 +147,7 @@ public class Camera extends Application {
                     _currentImage = null;
                     _currentMat = null;
                     _scPane.setContent(null);
-                    _scPane.setPannable(true);
+                    _scPaneImageNumberWagon.setContent(null);
                     return;
                 }
             }
@@ -381,133 +206,9 @@ public class Camera extends Application {
         });
 
         stage.show();
-
-        /*Scene scene = new Scene(root, 400.0, 150.0);
-        stage.setTitle("Recognizer" + Core.VERSION);
-        stage.setScene(scene);
-        stage.setOnCloseRequest(event -> {
-            Platform.exit();
-        });
-
-        Mat img22 = Imgcodecs.imread("C:\\Files\\VALUES\\7\\70_0.jpg");
-        if(img22.empty()){
-            System.out.println("Не удалось загрузить изображение!");
-            return;
-        }
-
-        Mat imgGray22 = new Mat(); //матрица, одержащая изображение
-        //в оттенках серого
-        Imgproc.cvtColor(img22, imgGray22, Imgproc.COLOR_BGR2GRAY);
-
-        Mat edges22 = new Mat();
-        Imgproc.Canny(imgGray22, edges22, 80, 200);
-        Mat edgesCopy22 = edges22.clone();
-        ArrayList<MatOfPoint> contours22 = new ArrayList<MatOfPoint>(); //список
-        //содержащий все найденные контуры
-        Mat hierarchy22 = new Mat();
-        Imgproc.findContours(edgesCopy22, contours22, hierarchy22,
-                Imgproc.RETR_EXTERNAL,
-                Imgproc.CHAIN_APPROX_NONE);
-        System.out.println(contours22.size());
-
-        Mat img = Imgcodecs.imread("C:\\Files\\data1.jpg");
-        if(img.empty()){
-            System.out.println("Не удалось загрузить изображение!");
-            return;
-        }
-
-        Mat imgGray = new Mat(); //матрица, одержащая изображение
-        //в оттенках серого
-        Imgproc.cvtColor(img, imgGray, Imgproc.COLOR_BGR2GRAY);
-        CvUtils.showImageFX(imgGray, "GRAY");
-
-        Mat edges = new Mat();
-        Imgproc.Canny(imgGray, edges, 80, 200);
-        CvUtils.showImageFX(edges, "Canny");
-        Mat edgesCopy = edges.clone();
-        ArrayList<MatOfPoint> contours = new ArrayList<MatOfPoint>(); //список
-        //содержащий все найденные контуры
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(edgesCopy, contours, hierarchy,
-                Imgproc.RETR_EXTERNAL,
-                Imgproc.CHAIN_APPROX_NONE);
-        int id = 0;//22
-        MatOfPoint shape = new MatOfPoint();
-        shape = contours22.get(id);
-        //double idArea = Imgproc.contourArea(contours.get(id));
-
-        double min = Double.MAX_VALUE, value = 0;
-        int index = (-1);
-
-        int k = 0;
-        while((k = isAreaMin(contours, 80)) != (-1))
-            contours.remove(k);
-
-        k = 0;
-        while((k = isAreaMax(contours, 300)) != (-1))
-            contours.remove(k);
-
-        for(int i = 0, j = contours.size(); i < j; i++){
-            //double area = Imgproc.contourArea(contours22.get(i));
-            if(!((area < (idArea + 100)) && (area > (idArea - 100))))
-                continue;
-            Imgproc.drawContours(img, contours, i, CvUtils.COLOR_RED);
-            double[] values = new double[]{
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I1, 0),
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I2, 0),
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I3, 0)
-            };
-            value = (values[0] < values[1])? (values[0] < values[2])? values[0]:
-                    ((values[1] < values[0])? ((values[1] < values[2])? values[1]:
-                            values[2]) : values[2]) : values[2];
-
-            if(value < min){
-                min = value;
-                index = i;
-            }
-
-            System.out.println("CV_CONTOURS_MATCH_I1: " + i + " " +
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I1, 0));
-            System.out.println("CV_CONTOURS_MATCH_I2: " + i + " " +
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I2, 0));
-            System.out.println("CV_CONTOURS_MATCH_I3: " + i + " " +
-                    Imgproc.matchShapes(contours.get(i), shape,
-                            Imgproc.CV_CONTOURS_MATCH_I3, 0));
-        }
-
-        Rect r = Imgproc.boundingRect(contours22.get(id));
-        Imgproc.drawContours(img22, contours22, id, CvUtils.COLOR_RED);
-        Imgproc.drawContours(img, contours, index, CvUtils.COLOR_BLUE);
-        Imgproc.rectangle(img22, new Point(r.x, r.y),
-                new Point(r.x + r.width - 1, r.y + r.height - 1),
-                CvUtils.COLOR_RED);
-        System.out.println("Лучшее совпадение: индекс " + index +
-                " значение " + min);
-        System.out.println("Площадь контура с index: " + Imgproc.contourArea(contours.get(index)));
-        System.out.println("Площадь контура сравнения: " + Imgproc.contourArea(contours22.get(0)));
-        CvUtils.showImageFX(img, "Что сравниваем");
-        CvUtils.showImageFX(img22, "Результат сравнения");
-        img.release(); imgGray.release();
-        edges.release(); edgesCopy.release(); shape.release();
-
-        img22.release(); imgGray22.release();
-        edges22.release(); edgesCopy22.release();
-
-        Imgproc.drawContours(img, contours, (-1), CvUtils.COLOR_RED);
-        CvUtils.showImageFX(img, "drawContours");
-
-
-        img.release(); imgGray.release();
-        edges.release(); edgesCopy.release();
-        hierarchy.release();*/
-
     }
 
+    //добавление информации о полувагоне в базу данных
     private void insertDataWagon(boolean recognize){
         if((_currentImage == null) || (_currentFilePath == null)
                 || (_currentFilePath.length() == 0)){
@@ -522,14 +223,32 @@ public class Camera extends Application {
 
         if(recognize){
             try{
-                Rect rect = _recognizer.getDetectImageRect(_currentMat);
-                Imgproc.rectangle(_currentMat, rect, CvUtils.COLOR_RED);
+
+                Rect r = _recognizer.getDetectImageRect(_currentMat);
+                Mat detect = _recognizer.getDetectImageMat(_currentMat);
+
+                Imgproc.rectangle(_currentMat, new Point(r.x, r.y),
+                        new Point(r.x + r.width, r.y + r.height),
+                        CvUtils.COLOR_RED, 2);
+
                 Image img = CvUtils.MatToImageFX(_currentMat);
                 _currentImage = new ImageView(img);
                 _scPane.setContent(_currentImage);
                 _scPane.setPannable(true);
 
-                _textResult.setText(_recognizer.recognizeNumber(_currentMat));
+                Image imgDetect = CvUtils.MatToImageFX(detect);
+                ImageView detectedImage = new ImageView(imgDetect);
+                _scPaneImageNumberWagon.setContent(detectedImage);
+                _scPaneImageNumberWagon.setPannable(true);
+
+                //распознование номера полувагона
+                _textResult.setText(_recognizer.recognizeNumber(detect));
+                _textLevelCorrect.setText(String.valueOf(_recognizer.getLevelCorrect()));
+                if(_recognizer.getLevelCorrect() >= 50){
+                    MessageShow(Alert.AlertType.INFORMATION, "Информация", "Слишком высокий уровень корректного распознования," +
+                            " возможны искажения или помехи в процессе обработки изображения!");
+                }
+                _recognizer.updateLevelCorrect();
             }catch (Exception e){
                 MessageShow(Alert.AlertType.ERROR, "Ошибка", e.getMessage());
             }
@@ -553,6 +272,7 @@ public class Camera extends Application {
 
             boolean isRecognize = DataNetwork.isNumberWagon("http://localhost:8080/database/register/numberwagon/is",
                     value);
+
             if((!isRecognize) && (!recognize)){
                 MessageShow(Alert.AlertType.ERROR, "Ошибка", "Полувагона с данным номером не присутствует" +
                         " в базе данных!");
@@ -585,7 +305,7 @@ public class Camera extends Application {
                 Integer.valueOf(_textResult.getText()),
                 formattedDate,
                 filePath,
-                0.0
+                (recognize)? Double.valueOf(_textLevelCorrect.getText()) : 0.0
         );
 
         try {
@@ -594,6 +314,8 @@ public class Camera extends Application {
             MessageShow(Alert.AlertType.ERROR, "Ошибка", e.getMessage());
             return;
         }
+
+        _recognizer.updateLevelCorrect();
     }
 
     //чтение данных номеров всех не прибывших полувагонов

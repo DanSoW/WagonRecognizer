@@ -84,5 +84,6 @@
     </orderEntry>
     <orderEntry type="library" name="lib1" level="project" />
     <orderEntry type="library" name="lib2" level="project" />
+    <orderEntry type="library" name="lib3" level="project" />
   </component>
 </module>

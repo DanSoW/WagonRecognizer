@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="677.0" prefWidth="873.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="736.0" prefWidth="873.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefHeight="436.0" prefWidth="641.0">
          <children>
@@ -21,16 +21,12 @@
                </children>
             </HBox>
             <HBox prefHeight="9.0" prefWidth="874.0" />
-            <HBox prefHeight="108.0" prefWidth="874.0">
+            <HBox prefHeight="34.0" prefWidth="874.0">
                <children>
                   <HBox prefHeight="87.0" prefWidth="27.0" />
                   <VBox prefHeight="102.0" prefWidth="172.0">
                      <children>
                         <Button id="_btnLoadImage" mnemonicParsing="false" prefHeight="26.0" prefWidth="172.0" text="Загрузить изображение" />
-                        <HBox prefHeight="10.0" prefWidth="172.0" />
-                        <Button id="_btnLoadVideo" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="172.0" text="Загрузить видео" />
-                        <HBox layoutX="10.0" layoutY="36.0" prefHeight="9.0" prefWidth="172.0" />
-                        <Button id="_btnRealTIme" layoutX="10.0" layoutY="54.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="172.0" text="Видеопоток камеры" />
                      </children>
                   </VBox>
                   <HBox prefHeight="58.0" prefWidth="19.0" />
@@ -40,17 +36,6 @@
                            <children>
                               <Button id="_btnRecognize" mnemonicParsing="false" prefHeight="26.0" prefWidth="179.0" text="Распознать" />
                            </children></HBox>
-                        <HBox prefHeight="42.0" prefWidth="550.0">
-                           <children>
-                              <HBox prefHeight="42.0" prefWidth="13.0" />
-                           </children>
-                        </HBox>
-                        <HBox prefHeight="24.0" prefWidth="550.0">
-                           <children>
-                              <Label prefHeight="42.0" prefWidth="146.0" text="Идентификатор камеры:" />
-                              <TextField id="_btnIdCamera" prefHeight="49.0" prefWidth="178.0" />
-                           </children>
-                        </HBox>
                      </children>
                   </VBox>
                </children>
@@ -58,24 +43,41 @@
             <HBox prefHeight="14.0" prefWidth="874.0" />
             <HBox prefHeight="30.0" prefWidth="874.0">
                <children>
-                  <HBox prefHeight="30.0" prefWidth="26.0" />
                   <HBox prefHeight="18.0" prefWidth="638.0">
                      <children>
-                        <Label prefHeight="50.0" prefWidth="162.0" text="Выбор номера полувагона:" />
-                        <ComboBox id="_cmbNumberWagon" prefHeight="31.0" prefWidth="224.0" />
+                        <HBox prefHeight="30.0" prefWidth="11.0" />
+                        <Label alignment="CENTER_RIGHT" prefHeight="64.0" prefWidth="144.0" text="Регистрационный номер:" />
                         <VBox prefHeight="30.0" prefWidth="16.0" />
-                        <Button id="_btnSelectedNumber" mnemonicParsing="false" prefHeight="55.0" prefWidth="156.0" text="Выбрать" />
+                        <TextField id="_txtResult" alignment="CENTER" editable="false" prefHeight="28.0" prefWidth="226.0" />
                      </children>
                   </HBox>
                </children>
             </HBox>
-            <VBox prefHeight="14.0" prefWidth="874.0" />
+            <VBox prefHeight="169.0" prefWidth="874.0">
+               <children>
+                  <HBox prefHeight="26.0" prefWidth="874.0">
+                     <children>
+                        <HBox prefHeight="39.0" prefWidth="14.0" />
+                        <Label prefHeight="39.0" prefWidth="145.0" text="Уровень распознования:" />
+                        <VBox prefHeight="26.0" prefWidth="10.0" />
+                        <TextField id="_txtLevelCorrect" alignment="CENTER" editable="false" prefHeight="44.0" prefWidth="228.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="11.0" prefWidth="874.0" />
+                  <HBox prefHeight="114.0" prefWidth="874.0">
+                     <children>
+                        <HBox prefHeight="136.0" prefWidth="10.0" />
+                        <ScrollPane id="_scPaneImageNumberWagon" prefHeight="114.0" prefWidth="347.0" />
+                     </children>
+                  </HBox>
+               </children></VBox>
             <HBox prefHeight="28.0" prefWidth="874.0">
                <children>
-                  <HBox prefHeight="46.0" prefWidth="24.0" />
-                  <Label alignment="CENTER_RIGHT" prefHeight="64.0" prefWidth="144.0" text="Регистрационный номер:" />
-                  <HBox prefHeight="28.0" prefWidth="20.0" />
-                  <TextField id="_txtResult" alignment="CENTER" editable="false" prefHeight="28.0" prefWidth="226.0" />
+                  <HBox prefHeight="28.0" prefWidth="14.0" />
+                  <Label prefHeight="50.0" prefWidth="162.0" text="Выбор номера полувагона:" />
+                  <ComboBox id="_cmbNumberWagon" prefHeight="31.0" prefWidth="224.0" />
+                  <VBox prefHeight="30.0" prefWidth="16.0" />
+                  <Button id="_btnSelectedNumber" mnemonicParsing="false" prefHeight="55.0" prefWidth="156.0" text="Выбрать" />
                </children>
             </HBox>
          </children>

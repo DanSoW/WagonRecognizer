@@ -29,8 +29,6 @@ import com.server.database.requests.DataElementRequestInsertRegister;
 import com.server.database.requests.DataElementRequestInsertWagons;
 import com.server.database.requests.DataElementRequestSetting;
 import com.server.database.services.DataElementService;
-import com.sun.el.parser.ParseException;
-import com.sun.istack.NotNull;
 
 //*****************************************************************************
 //Главный контроллер предоставляющий интерфейс для взаимодействия клиентской
@@ -137,12 +135,19 @@ public class MainController{
 
 		for(DataElementInvoices i : invoices) {
 			if(i.getNumberInvoice().equals(numberInvoice)) {
-				 DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
-			     if(format.parse(request.getArrivalDate()).before(
-			            format.parse(i.getDepartureTrainDate())
-			     )){
+				 DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				 boolean flag = false;
+				 try {
+					 flag = format.parse(request.getArrivalDate()).before(
+					            format.parse(i.getDepartureTrainDate()));
+				 }catch(Exception e) {
+					 throw new Exception("Дата прибытия полувагона представлена в не корректной форме!"
+								+ " Форма представления должна быть в формате гггг-мм-дд");
+				 }
+				 
+			     if(flag == true){
 			    	 throw new Exception("Прибытие полувагона не может быть раньше, чем отправка всего состава по данной накладной!");
-			    }
+			     }
 			     break;
 			}
 		}
@@ -210,12 +215,19 @@ public class MainController{
 
 		for(DataElementInvoices i : invoices) {
 			if(i.getNumberInvoice().equals(numberInvoice)) {
-				 DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
-			     if(format.parse(request.getArrivalDate()).before(
-			            format.parse(i.getDepartureTrainDate())
-			     )){
+				 DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				 boolean flag = false;
+				 try {
+					 flag = format.parse(request.getArrivalDate()).before(
+					            format.parse(i.getDepartureTrainDate()));
+				 }catch(Exception e) {
+					 throw new Exception("Дата прибытия полувагона представлена в не корректной форме!"
+								+ " Форма представления должна быть в формате гггг-мм-дд");
+				 }
+				 
+			     if(flag == true){
 			    	 throw new Exception("Прибытие полувагона не может быть раньше, чем отправка всего состава по данной накладной!");
-			    }
+			     }
 			     break;
 			}
 		}
@@ -258,12 +270,12 @@ public class MainController{
 			}
 		}
 		
-		if(index < 0)
-			throw new Exception("Полувагон с данным идентификационным номером не зарегистрирован ни в одной накладной!");
+		if(index >= 0) {
+			dataService.updateDataElementRegisterActualNumber(registers.get(index).getFkNumberInvoice(), request.getNumberWagon(), (short)0);
+		}
 		
 		(new File(findWagon.getImagePath())).delete(); 		//Удаление файла с изображением полувагона из локального хранилища сервера
 		dataService.deleteDataElementWagons(request.getNumberWagon());
-		dataService.updateDataElementRegisterActualNumber(registers.get(index).getFkNumberInvoice(), request.getNumberWagon(), (short)0);
 	}
 	
 	//**************************************************
@@ -301,13 +313,13 @@ public class MainController{
 			throw new Exception("Общее число прибывающих полувагонов по накладной не может быть меньше либо равно нулю!");
 		
 		try {
-			DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		     if(format.parse(request.getArrivalTrainDate()).before(
 		            format.parse(request.getDepartureTrainDate())
 		     )){
 		    	 throw new Exception("Дата приезда состава не может быть раньше даты отправки состава!");
 		    }
-		}catch(ParseException e) {
+		}catch(Exception e) {
 			throw new Exception("Дата приезда или отправки состава представлена в не корректной форме!"
 					+ " Форма представления должна быть в формате гггг-мм-дд");
 		}
@@ -342,13 +354,13 @@ public class MainController{
 			throw new Exception("Общее число прибывающих полувагонов по накладной не может быть меньше либо равно нулю!");
 		
 		try {
-			DateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		     if(format.parse(request.getArrivalTrainDate()).before(
 		            format.parse(request.getDepartureTrainDate())
 		     )){
 		    	 throw new Exception("Дата приезда состава не может быть раньше даты отправки состава!");
 		    }
-		}catch(ParseException e) {
+		}catch(Exception e) {
 			throw new Exception("Дата приезда или отправки состава представлена в не корректной форме!"
 					+ " Форма представления должна быть в формате гггг-мм-дд");
 		}
@@ -561,13 +573,23 @@ public class MainController{
 					+ "по данной накладной!");
 		
 		List<DataElementRegister> register = dataService.getDataElementRegisterAll();
+		boolean flag = false;
 		for(DataElementRegister i : register) {
 			if((i.getSerialNumber() != request.getSerialNumber())
 					&& (i.getNumberWagon() == request.getNumberWagon())) {
 				throw new Exception("Порядковый номер полувагона не изменяется! Чтобы изменить порядковый номер полувагона"
 						+ " необходимо удалить запись с данным порядковым номером и добавить на её основе новую, с новым порядковым номером!");
 			}
+			
+			if((i.getNumberWagon() == request.getNumberWagon()) && (i.getFkNumberInvoice().equals(request.getFkNumberInvoice()))) {
+				flag = true;
+			}
 		}
+		
+		if(!flag) {
+			throw new Exception("Записи с данным номером накладной и номером полувагона не присутствует в таблице регистрации!");
+		}
+		
 		
 		register.clear();
 		

@@ -5,10 +5,8 @@ import client.data.DataElementWagon;
 import client.network.DataNetwork;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -16,25 +14,17 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import net.sourceforge.tess4j.ITessAPI;
-import net.sourceforge.tess4j.Tesseract;
 import org.opencv.core.*;
-import org.opencv.features2d.*;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.CLAHE;
 import org.opencv.imgproc.Imgproc;
-import org.opencv.imgproc.Moments;
-import org.opencv.objdetect.CascadeClassifier;
 
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 
 //**********************************************************************
@@ -60,7 +50,7 @@ public class Camera extends Application {
 
     private volatile boolean _readMark = true;    //метка о старте/завершении считывания данных с сервера
     private volatile int _timeRead = 10000;       //время через которое будет считаны данные с сервера (обновление данных)
-    private Thread threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
+    private Thread _threadReadData = null;         //поток для обновления данных в таблице через определённый промежуток времени
 
     public static void MessageShow(Alert.AlertType type, String title, String message){
         Alert alert = new Alert(type);
@@ -179,7 +169,7 @@ public class Camera extends Application {
                 //только данный модуль имеет доступ к базе данных и предоставляет интерфейс
                 //позволяющий другим модулям обращаться к базе данных и взаимодействовать с
                 //данными
-                threadReadData = new Thread(() -> {
+                _threadReadData = new Thread(() -> {
                     while(_readMark){
                         Platform.runLater(new Runnable() {
                             @Override
@@ -189,7 +179,7 @@ public class Camera extends Application {
                         });
 
                         try {
-                            threadReadData.sleep(_timeRead); //ожидание определённый промежуток времени
+                            _threadReadData.sleep(_timeRead); //ожидание определённый промежуток времени
                         } catch (InterruptedException e) {
                             Platform.runLater(new Runnable() {
                                 @Override
@@ -201,7 +191,7 @@ public class Camera extends Application {
                     }
                 });
 
-                threadReadData.start();
+                _threadReadData.start();
             }
         });
 
